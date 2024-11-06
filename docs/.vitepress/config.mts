@@ -4,6 +4,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "邹吾",
   description: "邹吾",
+  base: "/zouwu/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
