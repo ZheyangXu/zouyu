@@ -4,7 +4,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "邹吾",
   description: "邹吾",
-  base: "/zouwu/",
+  base: "/zouyu/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -13,6 +13,12 @@ export default defineConfig({
         text: "ROS2",
         items: [{ text: "基础概念", link: "/ros2/basic-concepts" }],
       },
+      {
+        text: "机器人动力学",
+        items: [
+          {text: "基础概念", link: "/robotics/introduction" },
+        ]
+      }
     ],
 
     sidebar: {
@@ -25,13 +31,13 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/ZheyangXU/zouwu.git" },
+      { icon: "github", link: "https://github.com/ZheyangXU/zouyu.git" },
     ],
     footer: {
       message:
-        'Released under the <a href="https://github.com/ZheyangXu/jingwei-docs/main/LICENSE">MIT License</a>.',
+        'Released under the <a href="https://github.com/ZheyangXu/zouyu/main/LICENSE">MIT License</a>.',
       copyright:
-        'Copyright © 2024-present <a href="https://github.com/ZheyangXu/jingwei">ZheyangXu</a>',
+        'Copyright © 2024-present <a href="https://github.com/ZheyangXu">ZheyangXu</a>',
     },
   },
   markdown: {
