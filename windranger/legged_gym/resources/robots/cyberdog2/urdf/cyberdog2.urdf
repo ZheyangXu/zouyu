@@ -64,123 +64,124 @@
       <inertia ixx="0.0185" ixy="-0.000173" ixz="-0.0102" iyy="0.0517" iyz="-2.83e-05" izz="0.0483"/>
     </inertial>
   </link>
-  <!-- <joint name="imu_joint" type="fixed">
-        <parent link="body" />
-        <child link="imu_link" />
-        <origin rpy="0 0 0" xyz="33.4e-3 -17.2765e-3 51.0469e-3" />
-    </joint>
+  <joint name="imu_joint" type="fixed">
+      <parent link="body" />
+      <child link="imu_link" />
+      <origin rpy="0 0 0" xyz="33.4e-3 -17.2765e-3 51.0469e-3" />
+  </joint>
 
-    <link name="imu_link">
-        <inertial>
-            <mass value="0.001" />
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-        </inertial>
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size=".001 .001 .001" />
-            </geometry>
-        </collision>
-    </link>
-
-    <joint name="scan_joint" type="fixed">
-        <parent link="body" />
-        <child link="lidar_link" />
-        <origin rpy="0 0 0" xyz="0.21425 0 0.0908" />
-    </joint>
-
-    <link name="lidar_link">    
+  <link name="imu_link">
       <inertial>
-            <mass value="0.001" />
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+          <mass value="0.001" />
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
       </inertial>
-    </link>
+      <visual>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size="0.001 0.001 0.001" />
+          </geometry>
+      </visual>
+      <collision>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size=".001 .001 .001" />
+          </geometry>
+      </collision>
+  </link>
 
-    <joint name="D435_camera_joint" type="fixed">
-        <parent link="body" />
-        <child link="D435_camera_link" />
-        <origin rpy="0 0 0" xyz="271.994e-3 25e-3 114.912e-3" />
-    </joint>
+  <joint name="scan_joint" type="fixed">
+      <parent link="body" />
+      <child link="lidar_link" />
+      <origin rpy="0 0 0" xyz="0.21425 0 0.0908" />
+  </joint>
 
-    <link name="D435_camera_link">
-        <inertial>
-            <mass value="0.001" />
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-        </inertial>
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size=".001 .001 .001" />
-            </geometry>
-        </collision>
-    </link>
+  <link name="lidar_link">    
+    <inertial>
+          <mass value="0.001" />
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+    </inertial>
+  </link>
 
-    <joint name="RGB_camera_joint" type="fixed">
-        <parent link="body" />
-        <child link="RGB_camera_link" />
-        <origin rpy="0 0 0" xyz="275.76e-3 0 125.794e-3" />
-    </joint>
+  <joint name="D435_camera_joint" type="fixed">
+      <parent link="body" />
+      <child link="D435_camera_link" />
+      <origin rpy="0 0 0" xyz="271.994e-3 25e-3 114.912e-3" />
+  </joint>
 
-    <link name="RGB_camera_link">
-        <inertial>
-            <mass value="0.001" />
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-        </inertial>
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size=".001 .001 .001" />
-            </geometry>
-        </collision>
-    </link>
+  <link name="D435_camera_link">
+      <inertial>
+          <mass value="0.001" />
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+      </inertial>
+      <visual>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size="0.001 0.001 0.001" />
+          </geometry>
+      </visual>
+      <collision>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size=".001 .001 .001" />
+          </geometry>
+      </collision>
+  </link>
 
-    <joint name="AI_camera_joint" type="fixed">
-        <parent link="body" />
-        <child link="AI_camera_link" />
-        <origin rpy="0 0 0" xyz="290.228e-3 0 147.420e-3" />
-    </joint>
+  <joint name="RGB_camera_joint" type="fixed">
+      <parent link="body" />
+      <child link="RGB_camera_link" />
+      <origin rpy="0 0 0" xyz="275.76e-3 0 125.794e-3" />
+  </joint>
 
-    <link name="AI_camera_link">
-        <inertial>
-            <mass value="0.001" />
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
-        </inertial>
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <box size=".001 .001 .001" />
-            </geometry>
-        </collision>
-    </link> -->
+  <link name="RGB_camera_link">
+      <inertial>
+          <mass value="0.001" />
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+      </inertial>
+      <visual>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size="0.001 0.001 0.001" />
+          </geometry>
+      </visual>
+      <collision>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size=".001 .001 .001" />
+          </geometry>
+      </collision>
+  </link>
+
+  <joint name="AI_camera_joint" type="fixed">
+      <parent link="body" />
+      <child link="AI_camera_link" />
+      <origin rpy="0 0 0" xyz="290.228e-3 0 147.420e-3" />
+  </joint>
+
+  <link name="AI_camera_link">
+      <inertial>
+          <mass value="0.001" />
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+      </inertial>
+      <visual>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size="0.001 0.001 0.001" />
+          </geometry>
+      </visual>
+      <collision>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+          <geometry>
+              <box size=".001 .001 .001" />
+          </geometry>
+     </collision>
+  </link>
+  
   <joint name="FR_hip_joint" type="revolute">
     <origin rpy="0 0 0" xyz="0.164 -0.042 0"/>
     <parent link="trunk"/>
@@ -1034,4 +1035,3 @@
     </collision>
   </link>
 </robot>
-
