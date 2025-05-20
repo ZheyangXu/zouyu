@@ -10,19 +10,25 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       {
-        text: "ROS2",
-        items: [{ text: "基础概念", link: "/ros2/basic-concepts" }],
+        text: "机器人动力学",
+        link: "/robotics/",
       },
       {
-        text: "机器人动力学",
-        items: [
-          {text: "基础概念", link: "/robotics/introduction" },
-        ]
-      }
+        text: "机器人智能",
+        link: "/robotics-intelligence/",
+      },
+      {
+        text: "机器人理论",
+        link: "/control-theory/",
+      },
+      {
+        text: "机器人开发",
+        link: "/robotics-development/",
+      },
     ],
 
     sidebar: {
-      "/ros2/": [
+      "/robotics-development/ros2/": [
         {
           text: "ROS2",
           items: [{ text: "基础概念", link: "/ros2/basic-concepts" }],
