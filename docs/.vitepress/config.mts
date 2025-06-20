@@ -2,7 +2,8 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   title: "邹吾",
-  description: "林氏国 ，有珍兽，大若虎，五采毕具，尾长于身，名曰驺吾，乘之日行千里。",
+  description:
+    "林氏国 ，有珍兽，大若虎，五采毕具，尾长于身，名曰驺吾，乘之日行千里。",
   base: "/zouyu/",
   themeConfig: {
     nav: [
@@ -35,12 +36,6 @@ export default defineConfig({
         {
           text: "机器人建模与仿真",
           link: "/robotics/simulation/",
-          items: [
-            {
-              text: "Mujoco",
-              link: "/robotics/simulation/mujoco/",
-            },
-          ],
         },
       ],
       "/robotics-development/": [
@@ -52,6 +47,13 @@ export default defineConfig({
               text: "基础概念",
               link: "/robotics-development/ros2/basic-concepts/",
             },
+          ],
+        },
+        {
+          text: "Mujoco",
+          link: "/robotics-development/mujoco/",
+          items: [
+            { text: "建模", link: "/robotics-development/mujoco/modeling/" },
           ],
         },
       ],
