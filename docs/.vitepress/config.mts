@@ -7,7 +7,14 @@ export default defineConfig({
   base: "/zouyu/",
   themeConfig: {
     nav: [
-      { text: "Home", link: "/" },
+      {
+        text: "邹吾",
+        link: "/",
+      },
+      {
+        text: "Projects",
+        link: "/projects/",
+      },
       {
         text: "机器人学",
         link: "/robotics/",
@@ -53,7 +60,19 @@ export default defineConfig({
           text: "Mujoco",
           link: "/robotics-development/mujoco/",
           items: [
-            { text: "建模", link: "/robotics-development/mujoco/modeling/" },
+            {
+              text: "概要",
+              link: "/robotics-development/mujoco/overview/",
+            },
+            {
+              text: "计算",
+              link: "/robotics-development/mujoco/computation/",
+              items: [],
+            },
+            {
+              text: "建模",
+              link: "/robotics-development/mujoco/modeling/",
+            },
           ],
         },
       ],
