@@ -6,7 +6,7 @@ export default defineConfig({
     "林氏国 ，有珍兽，大若虎，五采毕具，尾长于身，名曰驺吾，乘之日行千里。",
   base: "/zouyu/",
   themeConfig: {
-    nav: [
+    nav: [ 
       {
         text: "邹吾",
         link: "/",
