@@ -239,3 +239,77 @@ margin, gap
 solref, solimp
 
 > 如果两个几何体中有一个具有更高的优先级，则使用其 solref 和 solimp 参数。如果两个几何体具有相同的优先级，则使用加权平均值。权重与 solmix 属性成正比，即 weight1 = solmix1 / (solmix1 + solmix2)，weight2 类似。这个加权平均规则有一个重要例外。如果任一几何体的 solref 为非正值，即它依赖于直接格式，则无论 solmix 如何，都使用逐元素最小值。这是因为对不同格式的 solref 参数进行平均是没有意义的。
+
+### 接触覆盖
+
+MuJoCo 使用了一套精细且新颖的约束模型，详见"计算"章节。要直观理解该模型的工作原理需要一些实验。为了促进这一过程，我们提供了一种覆盖部分求解器参数的机制，无需对实际模型进行更改。一旦禁用覆盖，仿真就会恢复到模型中指定的参数。这种机制还可以用于在数值优化（如最优控制或状态估计）的背景下实现延续方法。通过在优化的早期阶段允许接触从远距离起作用——以帮助优化器找到梯度并接近良好解——然后减少这种效果以使最终解在物理上更真实。
+
+这里的相关设置是 flag 的 override 属性（启用和禁用此机制），以及 option 的 o_margin、o_solref、o_solimp 属性（指定新的求解器参数）。注意覆盖仅适用于接触，不适用于其他类型的约束。原则上，MuJoCo 模型中有许多实值参数都可以从类似的覆盖机制中受益。但我们必须在某处划线，而接触是自然的选择，因为它们产生了最丰富但最难调整的行为。此外，接触动力学经常在数值优化方面提出挑战，经验表明，对接触参数的延续可以帮助避免局部最小值。
+
+### 用户参数
+
+许多 MJCF 元素都有可选属性 user，它定义了一个自定义的元素特定参数数组。这与 size 元素的相应"nuser_XXX"属性相互作用。例如，如果我们将 nuser_geom 设置为 5，那么 mjModel 中的每个 geom 都将有一个包含 5 个实值参数的自定义数组。这些 geom 特定参数要么通过 geom 的 user 属性在 MJCF 文件中定义，要么在省略此属性时由编译器设置为 0。所有"nuser_XXX"属性的默认值是 -1，这指示编译器自动将此值设置为模型中定义的最大关联 user 属性的长度。MuJoCo 不会在任何内部计算中使用这些参数；相反，它们可用于自定义计算。解析器允许 XML 中的任意长度数组，编译器稍后将它们调整为长度 nuser_XXX。
+
+通常用于内部计算的一些元素特定参数也可以用于自定义计算。这通过安装覆盖仿真管道部分的用户回调来完成。例如，通用执行器元素具有属性 dyntype 和 dynprm。如果 dyntype 设置为"user"，那么 MuJoCo 将调用 mjcb_act_dyn 来计算执行器动力学，而不是调用其内部函数。由 mjcb_act_dyn 指向的用户函数可以按其意愿解释 dynprm 中定义的参数。但是这个参数数组的长度不能更改（与前面描述的自定义数组不同，后者的长度在 MJCF 文件中定义）。这同样适用于其他回调。
+
+除了上述元素特定的用户参数，还可以通过自定义元素在模型中包含全局数据。对于在仿真过程中发生变化的数据，还有数组 mjData.userdata，其大小由 size 元素的 nuserdata 属性确定。
+
+### 求解器设置
+
+约束力和约束加速度的计算涉及数值求解优化问题。MuJoCo 有三种算法来求解这个优化问题：CG、Newton、PGS。每种算法都可以应用于摩擦锥的锥形或椭圆模型，以及稠密或稀疏约束雅可比矩阵。此外，用户可以指定最大迭代次数和控制早期终止的容差水平。还有第二个 Noslip 求解器，这是一个后处理步骤，通过指定正数的无滑移迭代次数来启用。所有这些算法设置都可以在 option 元素中指定。
+
+默认设置对大多数模型都运行良好，但在某些情况下需要调整算法。最好的方法是实验相关设置并使用 simulate.cc 中的可视化分析器，它显示不同计算的时间以及每次迭代的求解器统计信息。我们可以提供以下一般指导原则和观察：
+
+* 约束雅可比矩阵对于小模型应该是稠密的，对于大模型应该是稀疏的。默认设置是'auto'；当自由度数量不超过 60 时解析为稠密，超过 60 时为稀疏。但是请注意，阈值最好根据活跃约束的数量来定义，这取决于模型和行为。
+* 锥形和椭圆摩擦锥之间的选择是建模选择而不是算法选择，即它导致用相同算法求解的不同优化问题。椭圆锥更接近物理现实。但是锥形锥可以改善算法性能——但不一定。虽然默认是锥形，我们建议尝试椭圆锥。当接触滑移是问题时，抑制它的最好方法是使用椭圆锥、大的 impratio 和具有非常小容差的 Newton 算法。如果这还不够，启用 Noslip 求解器。
+* Newton 算法是大多数模型的最佳选择。它在全局最小值附近具有二次收敛性，并在令人惊讶的少数迭代中到达那里——通常约 5 次，很少超过 20 次。它应该与激进的容差值一起使用，比如 1e-10，因为它能够在不增加延迟的情况下实现高精度（由于最后的二次收敛）。我们见过它减慢的唯一情况是具有椭圆锥和许多滑移接触的大模型。在该状态下，Hessian 分解需要大量更新。在某些大模型中，如果模型元素的不幸排序导致高填充，它也可能减慢（计算最优消除顺序是 NP 困难的，所以我们依赖启发式）。请注意可以在分析器中监控分解 Hessian 中非零元素的数量。
+* CG 算法在上述 Newton 减慢的情况下运行良好。一般来说，CG 显示出具有良好速率的线性收敛，但在迭代次数方面无法与 Newton 竞争，特别是当需要高精度时。但是它的迭代要快得多，不受填充或椭圆锥增加复杂性的影响。如果 Newton 被证明太慢，接下来尝试 CG。
+* 当自由度数量大于约束数量时，PGS 求解器是最佳的。PGS 求解约束优化问题，根据我们的经验具有次线性收敛，但它通常在前几次迭代中取得快速进展。所以当可以容忍不准确解时，它是一个好选择。对于具有大质量比或其他导致条件不良的模型属性的系统，PGS 收敛往往相当慢。请记住，PGS 执行顺序更新，因此在物理应该对称的系统中破坏对称性。相比之下，CG 和 Newton 执行并行更新并保持对称性。
+* Noslip 求解器是一个修改的 PGS 求解器。它作为主求解器（可以是 Newton、CG 或 PGS）之后的后处理步骤执行。主求解器更新所有未知数。相比之下，Noslip 求解器只更新摩擦维度中的约束力，并忽略约束正则化。这具有抑制由软约束模型引起的漂移或滑移的效果。但是，这种优化步骤的级联不再求解明确定义的优化问题（或任何其他问题）；相反，它只是一个临时机制。虽然它通常完成其工作，但我们在具有多个接触之间更复杂相互作用的模型中见过一些不稳定性。
+* PGS 在计算约束空间中的逆惯性方面有设置成本（在 CPU 时间方面）。类似地，Newton 对 Hessian 的初始分解有设置成本，并根据稍后需要多少分解更新而产生额外的分解成本。CG 没有任何设置成本。由于 Noslip 求解器也是 PGS 求解器，每当启用 Noslip 时都将支付 PGS 设置成本，即使主求解器是 CG 或 Newton。主 PGS 和 Noslip PGS 的设置操作是相同的，因此当两者都启用时，设置成本只支付一次。
+
+### 执行器
+
+本节描述在 MuJoCo 中使用执行器的各个方面。有关计算模型，请参阅[执行模型](https://mujoco.readthedocs.io/en/stable/computation/index.html#geactuation)。
+
+#### 组禁用
+
+[actuatorgroupdisable](https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-actuatorgroupdisable) 属性可以在运行时通过设置 [mjOption.disableactuator](https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjoption) 整数位字段来更改，允许用户根据执行器的组来禁用执行器集合。当希望为同一运动学树使用多种类型的执行器时，此功能很方便。例如，考虑一个具有支持多种控制模式（如扭矩控制和位置控制）固件的机器人。在这种情况下，可以在同一个 MJCF 模型中定义两种类型的执行器，将一种类型的执行器分配给组 0，将另一种分配给组 1。
+
+[actuatorgroupdisable](https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-actuatorgroupdisable) MJCF 属性选择默认禁用哪些组，[mjOption.disableactuator](https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjoption) 可以在运行时设置以切换活跃集合。请注意，执行器总数 `mjModel.nu` 保持不变，执行器索引也是如此，因此用户需要知道被禁用执行器的相应 `mjData.ctrl` 值将被忽略且不产生力。此[示例模型](https://github.com/google-deepmind/mujoco/blob/main/test/engine/testdata/actuation/actuator_group_disable.xml)有三个执行器组，可以在模拟交互式查看器中运行时切换。
+
+#### 快捷方式
+
+如"计算"章节的执行模型部分所解释的，MuJoCo 提供了一个灵活的执行器模型，其传动、激活动力学和力生成组件可以独立指定。完整功能可以通过 XML 元素 general 访问，允许用户创建各种自定义执行器。此外，MJCF 提供了配置常见执行器的快捷方式。这通过 XML 元素 motor、position、velocity、intvelocity、damper、cylinder、muscle 和 adhesion 完成。这些不是独立的模型元素。在内部，MuJoCo 只支持一种执行器类型——这就是为什么当保存 MJCF 模型时，所有执行器都写为 general。快捷方式隐式创建 general 执行器，将其属性设置为合适的值，并暴露可能具有不同名称的属性子集。例如，position 创建一个位置伺服，具有属性 kp，它是伺服增益。但是 general 没有属性 kp。相反，解析器以协调的方式调整 general 执行器的增益和偏置参数，以模拟位置伺服。同样的效果可以通过直接使用 general 并将其属性设置为某些值来实现，如下所述。
+
+执行器快捷方式也与默认值交互。回想一下，默认设置机制涉及类，每个类都有一个完整的虚拟元素集合（每种元素类型一个），用于初始化实际模型元素的属性。特别是，每个默认类只有一个 general 执行器元素。如果我们在同一个默认类中先指定 position 然后指定 velocity 会发生什么？XML 元素按顺序处理，每当遇到与执行器相关的元素时，单个 general 执行器的属性就会被设置。因此 velocity 具有优先权。但是，如果我们在默认类中指定 general，它只会设置明确给出的属性，而其余的保持不变。在创建实际模型元素时会出现类似的复杂情况。假设活跃默认类指定了 position，现在我们使用 general 创建执行器并省略其某些属性。缺失的属性将设置为用于建模位置伺服的任何值，即使此执行器可能不打算作为位置伺服。
+
+鉴于这些潜在的复杂性，我们建议一种简单的方法：在默认类和创建实际模型元素时使用相同的执行器快捷方式。如果给定模型需要不同的执行器，要么创建多个默认类，要么避免对执行器使用默认值，而是明确指定其所有属性。
+
+#### 力限制
+
+执行器力通常在下限和上限之间受限。这些限制可以通过三种方式强制执行：
+
+**使用 [ `ctrlrange` ](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-general-ctrlrange) 进行控制钳制：**
+
+> 如果设置了此执行器属性，输入控制值将被钳制。对于简单[电机](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-motor)，钳制控制输入等效于钳制力输出。
+
+**使用 [forcerange](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-general-forcerange) 在执行器输出处进行力钳制：**
+
+> 如果设置了此执行器属性，执行器的输出力将被钳制。此属性对[位置执行器](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-position)等很有用，可以将力保持在界限内。请注意，位置执行器通常还需要控制范围钳制以避免触及关节限制。
+
+**使用 [joint/actuatorfrcrange](https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-joint-actuatorfrcrange) 在关节输入处进行力钳制：**
+
+> 此关节属性钳制作用在关节上的所有执行器输入力，经过传动后。在关节处钳制执行器力等效于在执行器处钳制它们，如果传动是简单的（执行器和关节之间存在一对一关系）。但是，在多个执行器作用在一个关节或一个执行器作用在多个关节的情况下——而实际扭矩是由关节处的单个物理执行器施加的——希望在关节本身钳制力。以下是三个示例，其中希望在关节而不是执行器处钳制执行器力：
+>
+> * 在此[示例模型](https://github.com/google-deepmind/mujoco/blob/main/test/engine/testdata/actuation/joint_force_clamp.xml)中，两个执行器（电机和阻尼器）作用在单个关节上。
+> * 在此[示例模型](https://github.com/google-deepmind/mujoco/blob/main/model/car/car.xml)中（类似于"Dubin's Car"），两个执行器通过固定腱传动作用在两个轮子上，以施加对称（向前/向后滚动）和反对称（向右/向左转动）扭矩。
+> * 在此[示例模型](https://github.com/google-deepmind/mujoco/tree/main/test/engine/testdata/actuation/refsite.xml)中，位点传动实现了手臂末端执行器的笛卡尔控制器。为了使计算的扭矩能够由单个、扭矩受限的关节电机实现，它们需要在关节处被钳制。
+>
+> 请注意，在这种情况下，力/扭矩由传动组合，应使用 jointactuatorfrc 传感器来报告作用在关节上的总执行器力。标准 actuatorfrc 传感器将继续报告预钳制执行器力。
+
+**使用 tendon/actuatorfrcrange 在腱输入处进行力钳制：**
+
+> 此腱属性钳制作用在腱上的所有执行器输入力。
+
+上述钳制选项是非排他的，可以根据需要组合使用。
