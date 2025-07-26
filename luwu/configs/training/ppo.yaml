@@ -1,0 +1,81 @@
+# PPO Training Configuration
+algorithm:
+  name: "ppo"
+  
+  # Learning parameters
+  learning_rate: 3.0e-4
+  lr_schedule: "adaptive"  # fixed, linear, adaptive
+  
+  # PPO specific parameters
+  clip_param: 0.2
+  value_loss_coef: 1.0
+  entropy_coef: 0.01
+  max_grad_norm: 1.0
+  
+  # Training parameters
+  num_learning_iterations: 5000
+  num_steps_per_env: 24
+  mini_batch_size: 24576
+  num_mini_batches: 4
+  num_epochs: 5
+  
+  # GAE parameters
+  gamma: 0.998
+  lambda: 0.95
+  
+  # Network architecture
+  actor_hidden_dims: [512, 256, 128]
+  critic_hidden_dims: [512, 256, 128]
+  activation: "elu"  # relu, elu, tanh
+  
+# Experience replay
+experience_replay:
+  enabled: false
+  buffer_size: 1000000
+  
+# Checkpointing
+checkpoints:
+  save_interval: 100  # iterations
+  keep_checkpoints: 10  # number of checkpoints to keep
+  auto_resume: true
+  
+# Evaluation
+evaluation:
+  enabled: true
+  interval: 100  # iterations
+  num_episodes: 10
+  
+# Logging
+logging:
+  log_interval: 10  # iterations
+  video_interval: 500  # iterations
+  
+  # Metrics to track
+  metrics:
+    - "episode_reward"
+    - "episode_length"
+    - "policy_loss"
+    - "value_loss"
+    - "entropy_loss"
+    - "explained_variance"
+    - "clipfrac"
+    - "approx_kl"
+    - "learning_rate"
+    
+# Early stopping
+early_stopping:
+  enabled: true
+  patience: 500  # iterations
+  min_delta: 0.01  # minimum improvement
+  
+# Hyperparameter optimization
+hyperopt:
+  enabled: false
+  backend: "optuna"  # optuna, ray
+  trials: 100
+  
+  # Parameters to optimize
+  search_space:
+    learning_rate: [1e-5, 1e-3]
+    clip_param: [0.1, 0.3]
+    entropy_coef: [0.001, 0.1]
