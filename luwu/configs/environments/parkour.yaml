@@ -1,0 +1,135 @@
+# Parkour Environment Configuration
+environment:
+  name: "parkour"
+  description: "Challenging parkour environment with various obstacles"
+  
+# Terrain settings
+terrain:
+  type: "procedural"  # procedural, heightfield, mesh
+  size: [100.0, 100.0]  # [x, y] meters
+  resolution: 0.05  # meters per pixel
+  
+  # Procedural terrain parameters
+  procedural:
+    slope_threshold: 0.75
+    height_noise: 0.1
+    
+    # Obstacle types and probabilities
+    obstacles:
+      stairs:
+        probability: 0.2
+        height_range: [0.05, 0.3]
+        width_range: [0.3, 1.0]
+      gaps:
+        probability: 0.1
+        width_range: [0.2, 0.8]
+        depth_range: [0.1, 0.5]
+      slopes:
+        probability: 0.3
+        angle_range: [0.1, 0.4]  # radians
+      rough_terrain:
+        probability: 0.4
+        roughness: 0.1
+        
+# Environmental conditions
+conditions:
+  gravity: [0.0, 0.0, -9.81]  # [x, y, z] m/s²
+  
+  # Wind (if enabled)
+  wind:
+    enabled: false
+    velocity: [0.0, 0.0, 0.0]  # [x, y, z] m/s
+    noise_std: 0.1
+    
+  # Lighting
+  lighting:
+    ambient_intensity: 0.3
+    directional_intensity: 0.7
+    
+# Episode settings
+episode:
+  max_episode_length: 1000  # steps
+  timeout_penalty: -50.0
+  
+  # Termination conditions
+  termination:
+    base_contact: true
+    base_height_threshold: 0.1  # meters
+    roll_pitch_threshold: 1.57  # radians (90 degrees)
+    
+# Curriculum learning
+curriculum:
+  enabled: true
+  
+  # Terrain difficulty progression
+  terrain_difficulty:
+    initial: 0.0
+    final: 1.0
+    increment_threshold: 0.8  # success rate threshold
+    increment_step: 0.1
+    
+  # Command velocity progression
+  command_velocity:
+    initial: [0.5, 0.0, 0.0]  # [vx, vy, vyaw]
+    final: [2.0, 0.5, 1.0]
+    increment_threshold: 0.8
+    increment_step: 0.1
+
+# Observation space
+observations:
+  # Proprioceptive observations
+  proprioceptive:
+    base_linear_velocity: true
+    base_angular_velocity: true
+    base_orientation: true
+    joint_positions: true
+    joint_velocities: true
+    actions: true  # previous actions
+    
+  # Exteroceptive observations
+  exteroceptive:
+    height_measurements: true
+    height_scan_points: 187  # number of points in height scan
+    height_scan_range: 3.0  # meters
+    
+  # Historical observations
+  history:
+    enabled: true
+    length: 10  # number of time steps
+    
+# Action space
+actions:
+  type: "joint_positions"  # joint_positions, joint_velocities, joint_torques
+  dimension: 12  # number of joints
+  clip_range: [-1.0, 1.0]  # action clipping
+
+# Randomization (Domain Randomization)
+randomization:
+  enabled: true
+  
+  # Physics randomization
+  physics:
+    mass:
+      enabled: true
+      range: [0.8, 1.2]  # multiplier
+    friction:
+      enabled: true
+      range: [0.5, 1.5]  # multiplier
+    restitution:
+      enabled: true
+      range: [0.0, 0.4]
+      
+  # External forces
+  external_forces:
+    enabled: true
+    force_range: [-50.0, 50.0]  # Newtons
+    torque_range: [-10.0, 10.0]  # Newton-meters
+    
+  # Noise
+  noise:
+    observations:
+      enabled: true
+      std: 0.05
+    actions:
+      enabled: true
+      std: 0.01
