@@ -1,0 +1,66 @@
+# Rough Terrain Parkour Environment
+name: rough_parkour
+terrain_type: rough
+terrain_size: [12.0, 12.0]  # length, width in meters
+num_envs: 4096
+env_spacing: 3.0
+episode_length: 1500
+observation_space_dim: 48
+action_space_dim: 12
+
+# Physics parameters
+gravity: [0.0, 0.0, -9.81]
+dt: 0.02
+substeps: 4
+
+# Terrain parameters
+terrain_parameters:
+  roughness: 0.1  # Maximum height variation
+  frequency: 2.0  # Spatial frequency of terrain features
+  obstacles:
+    enable: true
+    density: 0.1  # Obstacles per square meter
+    max_height: 0.2
+    max_width: 0.5
+
+# Reward components
+reward_components:
+  - name: survival
+    weight: 2.0
+    scale: 1.0
+    enabled: true
+    
+  - name: forward_velocity
+    weight: 1.0
+    scale: 1.0
+    enabled: true
+    
+  - name: upright_posture
+    weight: 0.8
+    scale: 1.0
+    enabled: true
+    
+  - name: terrain_adaptation
+    weight: 0.5
+    scale: 1.0
+    enabled: true
+    
+  - name: foot_contact_stability
+    weight: 0.3
+    scale: 1.0
+    enabled: true
+    
+  - name: action_penalty
+    weight: -0.01
+    scale: 1.0
+    enabled: true
+    
+  - name: joint_velocity_penalty
+    weight: -0.0002
+    scale: 1.0
+    enabled: true
+    
+  - name: torque_penalty
+    weight: -0.0001
+    scale: 1.0
+    enabled: true

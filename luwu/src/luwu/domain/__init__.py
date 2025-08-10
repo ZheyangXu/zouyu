@@ -1,5 +1,5 @@
-"""Domain layer - Core business logic and entities."""
+"""Domain layer for LuWu parkour training system."""
 
-from luwu.domain.entities import *
-from luwu.domain.repositories import *
-from luwu.domain.services import *
+from luwu.domain import entities, services
+
+__all__ = ["entities", "services"]

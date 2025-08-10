@@ -1,95 +1,50 @@
 # Go1 Robot Configuration
-robot:
-  name: "go1"
-  urdf_path: "resources/robots/go1/go1.urdf"
-  
-# Physical properties
-physics:
-  mass: 12.5  # kg
-  height: 0.32  # m
-  
-# Initial state
-init_state:
-  position: [0.0, 0.0, 0.32]  # x, y, z [m]
-  orientation: [0.0, 0.0, 0.0, 1.0]  # quaternion [x, y, z, w]
-  linear_velocity: [0.0, 0.0, 0.0]  # [m/s]
-  angular_velocity: [0.0, 0.0, 0.0]  # [rad/s]
-  
-  # Joint angles [rad]
-  joint_angles:
-    FL_hip_joint: 0.1
-    RL_hip_joint: 0.1
-    FR_hip_joint: -0.1
-    RR_hip_joint: -0.1
-    FL_thigh_joint: 0.8
-    RL_thigh_joint: 1.0
-    FR_thigh_joint: 0.8
-    RR_thigh_joint: 1.0
-    FL_calf_joint: -1.5
-    RL_calf_joint: -1.5
-    FR_calf_joint: -1.5
-    RR_calf_joint: -1.5
+name: go1
+urdf_path: assets/robots/go1/urdf/go1.urdf
+mujoco_path: assets/robots/go1.xml
+num_joints: 12
+joint_names:
+  - FL_hip_joint
+  - FL_thigh_joint
+  - FL_calf_joint
+  - FR_hip_joint
+  - FR_thigh_joint
+  - FR_calf_joint
+  - RL_hip_joint
+  - RL_thigh_joint
+  - RL_calf_joint
+  - RR_hip_joint
+  - RR_thigh_joint
+  - RR_calf_joint
 
-# Control settings
-control:
-  type: "position"
-  decimation: 4
-  action_scale: 0.25
-  
-  # PD gains
-  stiffness:
-    hip: 25.0
-    thigh: 25.0
-    calf: 25.0
-  damping:
-    hip: 0.6
-    thigh: 0.6
-    calf: 0.6
-    
-  # Joint limits [rad]
-  joint_limits:
-    hip: [-1.0, 1.0]
-    thigh: [-0.6, 4.5]
-    calf: [-2.8, -0.8]
+default_joint_positions:
+  - 0.0   # FL_hip_joint
+  - 0.9   # FL_thigh_joint
+  - -1.8  # FL_calf_joint
+  - 0.0   # FR_hip_joint
+  - 0.9   # FR_thigh_joint
+  - -1.8  # FR_calf_joint
+  - 0.0   # RL_hip_joint
+  - 0.9   # RL_thigh_joint
+  - -1.8  # RL_calf_joint
+  - 0.0   # RR_hip_joint
+  - 0.9   # RR_thigh_joint
+  - -1.8  # RR_calf_joint
 
-# Sensor configuration
-sensors:
-  imu:
-    enabled: true
-    noise_std: 0.01
-  joint_encoders:
-    enabled: true
-    noise_std: 0.001
-  contact_sensors:
-    enabled: true
-    bodies: ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
-    
-# Asset settings
-asset:
-  file: "resources/robots/go1/go1.urdf"
-  foot_name: "foot"
-  penalize_contacts_on: ["thigh", "calf"]
-  terminate_after_contacts_on: ["base"]
-  self_collisions: false
-  
-# Reward configuration - similar to A1 but tuned for Go1
-rewards:
-  linear_velocity_xy: 1.0
-  angular_velocity_z: 0.5
-  joint_acceleration: -2.5e-7
-  action_rate: -0.01
-  torques: -1e-5
-  termination: -200.0
-  tracking_lin_vel: 1.0
-  tracking_ang_vel: 0.5
-  lin_vel_z: -2.0
-  ang_vel_xy: -0.05
-  orientation: -5.0
-  base_height: -10.0
-  dof_vel: -0.0001
-  dof_acc: -2.5e-7
-  collision: -5.0
-  action_smoothness: -0.01
-  feet_air_time: 1.0
-  stumble: -2.0
-  stand_still: -0.1
+joint_limits:
+  FL_hip_joint: [-1.22, 1.22]
+  FL_thigh_joint: [-2.77, 2.77]
+  FL_calf_joint: [-2.77, 2.77]
+  FR_hip_joint: [-1.22, 1.22]
+  FR_thigh_joint: [-2.77, 2.77]
+  FR_calf_joint: [-2.77, 2.77]
+  RL_hip_joint: [-1.22, 1.22]
+  RL_thigh_joint: [-2.77, 2.77]
+  RL_calf_joint: [-2.77, 2.77]
+  RR_hip_joint: [-1.22, 1.22]
+  RR_thigh_joint: [-2.77, 2.77]
+  RR_calf_joint: [-2.77, 2.77]
+
+mass: 12.0
+base_dimensions: [0.366, 0.094, 0.114]  # length, width, height
+motor_strength: 23.7  # Nm

@@ -1,3 +1,5 @@
-"""Application layer - Application services and use cases."""
+"""Application layer for LuWu parkour training system."""
 
-from luwu.application.services import *
+from luwu.application import algorithms, environments, training
+
+__all__ = ["algorithms", "environments", "training"]

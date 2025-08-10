@@ -1,0 +1,15 @@
+# Basic PPO Training Configuration
+algorithm: PPO
+num_iterations: 5000
+num_steps_per_env: 24
+mini_batch_size: 4096
+num_epochs: 5
+learning_rate: 0.0003
+gamma: 0.99
+lam: 0.95
+clip_coef: 0.2
+entropy_coef: 0.01
+value_loss_coef: 0.5
+max_grad_norm: 1.0
+save_interval: 100
+checkpoint_dir: checkpoints/basic_ppo

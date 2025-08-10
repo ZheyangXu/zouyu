@@ -1,250 +1,298 @@
-# Luwu - Advanced Legged Robot Parkour Training
+# LuWu: Advanced Legged Robot Parkour Training System
 
-Luwu is a modular and extensible framework for training legged robots to perform parkour tasks using reinforcement learning. Built with Isaac Sim and Isaac Lab, it provides a modern alternative to the archived Isaac Gym.
+LuWu (驱虎) is a unified framework for training legged robots in parkour environments. It supports multiple simulation engines (Isaac Sim/Lab, MuJoCo), provides Gymnasium-compatible APIs, and implements state-of-the-art reinforcement learning algorithms.
 
-## Features
+## Key Features
 
-* 🤖 **Multi-Robot Support**: Support for various legged robots (A1, Go1, ANYmal, etc.)
-* 🏃 **Parkour Training**: Specialized for challenging parkour environments with obstacles
-* ⚙️ **Configuration-Driven**: All robot and environment settings are externally configurable using YAML/JSON/TOML
-* 📊 **Unified Tracking**: Support for both W&B and TensorBoard experiment tracking
-* 🏗️ **Clean Architecture**: Follows Domain-Driven Design (DDD) principles
-* 🧪 **High Test Coverage**: Comprehensive test suite with >90% coverage
-* 🛠️ **Developer-Friendly**: Modern Python with type hints, Black, isort, and Ruff formatting
-* 📦 **PDM Management**: Uses PDM for modern Python dependency management
+* **Multi-Engine Support**: Isaac Sim, Isaac Lab, and MuJoCo backends
+* **Gymnasium Compatible**: Standard RL environment interface
+* **Configuration-Based**: All robot and training parameters in config files
+* **Unified Tracking**: Support for both WandB and TensorBoard
+* **RTX 5080 Optimized**: GPU-accelerated training for modern hardware
+* **Clean Architecture**: Domain-driven design with comprehensive testing
+* **Type Safety**: Full type hints and strict code quality standards
 
 ## Architecture
 
-The project follows Domain-Driven Design (DDD) with clear separation of concerns:
+The project follows Domain-Driven Design (DDD) principles:
 
 ```
 src/luwu/
-├── domain/          # Core business logic and entities
-├── application/     # Application services and use cases  
-├── infrastructure/  # External systems (config, tracking, etc.)
-└── interfaces/      # External interfaces and adapters
+├── domain/           # Core business logic
+│   ├── entities/     # Domain entities (Robot, Environment, etc.)
+│   └── services/     # Domain services
+├── application/      # Application services
+│   ├── algorithms/   # RL algorithms (PPO, etc.)
+│   ├── environments/ # Environment implementations
+│   └── training/     # Training orchestration
+├── infrastructure/   # External concerns
+│   ├── config/       # Configuration management
+│   ├── simulation/   # Simulation backends
+│   └── tracking/     # Logging and tracking
+└── interfaces/       # User interfaces (CLI, etc.)
 ```
 
-## Quick Start
-
-### Installation
+## Installation
 
 ```bash
-# Clone the repository
+# Navigate to luwu directory
 cd luwu
 
-# Install dependencies with PDM
+# Install dependencies
 pdm install
 
-# Install development dependencies
-pdm install -G dev
-
-# Install pre-commit hooks (optional)
-pre-commit install
+# Install in development mode
+pdm install -e .
 ```
 
-### Configuration
+## Configuration
 
-Create or modify configuration files in the `configs/` directory:
+All configurations are stored in YAML files under `configs/` :
 
-* `configs/robots/` - Robot-specific configurations
-* `configs/environments/` - Environment configurations  
-* `configs/training/` - Training algorithm configurations
-* `configs/settings.yaml` - Main project settings
+### Robot Configuration ( `configs/robots/` )
+
+```yaml
+# configs/robots/a1.yaml
+name: a1
+urdf_path: assets/robots/a1/urdf/a1.urdf
+num_joints: 12
+joint_names: [FL_hip_joint, FL_thigh_joint, ...]
+default_joint_positions: [0.0, 0.9, -1.8, ...]
+joint_limits:
+  FL_hip_joint: [-1.22, 1.22]
+  # ...
+mass: 12.0
+base_dimensions: [0.366, 0.094, 0.114]
+motor_strength: 33.5
+```
+
+### Environment Configuration ( `configs/environments/` )
+
+```yaml
+# configs/environments/flat_parkour.yaml
+name: flat_parkour
+terrain_type: flat
+terrain_size: [8.0, 8.0]
+num_envs: 4096
+env_spacing: 2.0
+episode_length: 1000
+observation_space_dim: 48
+action_space_dim: 12
+
+reward_components:
+  - name: survival
+    weight: 2.0
+    enabled: true
+  - name: forward_velocity
+    weight: 1.5
+    enabled: true
+  # ...
+```
+
+### Training Configuration ( `configs/training/` )
+
+```yaml
+# configs/training/basic_ppo.yaml
+algorithm: PPO
+num_iterations: 5000
+num_steps_per_env: 24
+mini_batch_size: 4096
+num_epochs: 5
+learning_rate: 0.0003
+gamma: 0.99
+lam: 0.95
+clip_coef: 0.2
+entropy_coef: 0.01
+value_loss_coef: 0.5
+max_grad_norm: 1.0
+save_interval: 100
+checkpoint_dir: checkpoints/basic_ppo
+```
+
+## Usage
 
 ### Training
 
 ```bash
-# Train with default configuration
-luwu-train
+# Train with MuJoCo
+luwu-train --robot a1 --env flat_parkour --training basic_ppo --engine mujoco
 
-# Train with specific robot and environment
-luwu-train --robot a1 --environment parkour --algorithm ppo
+# Train with Isaac Sim
+luwu-train --robot go1 --env rough_parkour --training advanced_ppo --engine isaac_sim
 
-# Train with custom experiment name
-luwu-train --experiment-name "my_parkour_experiment"
+# With WandB tracking
+luwu-train --robot a1 --env flat_parkour --training basic_ppo --wandb-project my-parkour
+
+# Resume from checkpoint
+luwu-train --robot a1 --env flat_parkour --training basic_ppo --resume checkpoints/basic_ppo/checkpoint_1000.pt
 ```
 
-### Playing/Evaluation
+### Evaluation and Visualization
 
 ```bash
-# Play a trained model
-luwu-play --robot a1 --checkpoint ./logs/checkpoints/model.pth --render
+# Play trained policy
+luwu-play --robot a1 --env flat_parkour --engine mujoco --checkpoint checkpoints/best_model.pt
 
-# Evaluate a model
-luwu-eval --robot a1 --checkpoint ./logs/checkpoints/model.pth --episodes 100
+# Deterministic evaluation
+luwu-play --robot a1 --env flat_parkour --engine mujoco --checkpoint checkpoints/best_model.pt --deterministic
+
+# Quantitative evaluation
+luwu-eval --robot a1 --env flat_parkour --engine mujoco --checkpoint checkpoints/best_model.pt --num-episodes 100
 ```
 
-### Configuration Management
+### Python API
 
-```bash
-# List available configurations
-luwu list-configs
+```python
+from luwu import config_manager
+from luwu.domain.entities import RobotConfig, EnvironmentConfig, TrainingConfig
+from luwu.application.training import ParkourTrainer
+from luwu.infrastructure.simulation import MujocoSimulation
+from luwu.application.environments import VectorizedLeggedParkourEnv
 
-# Validate a configuration setup
-luwu validate --robot a1 --environment parkour --algorithm ppo
+# Load configurations
+robot_config = RobotConfig(**config_manager.get_robot_config("a1"))
+env_config = EnvironmentConfig(**config_manager.get_env_config("flat_parkour"))
+training_config = TrainingConfig(**config_manager.get_training_config("basic_ppo"))
+
+# Create simulation backend
+simulation = MujocoSimulation(robot_config, env_config.dict())
+
+# Create environment
+env = VectorizedLeggedParkourEnv(
+    robot_config=robot_config,
+    env_config=env_config,
+    simulation_backend=simulation,
+)
+
+# Create trainer
+trainer = ParkourTrainer(
+    robot_config=robot_config,
+    env_config=env_config,
+    training_config=training_config,
+    env=env,
+)
+
+# Train
+trainer.train()
 ```
 
-## Configuration Examples
+## Supported Robots
 
-### Robot Configuration (configs/robots/a1.yaml)
+* **Unitree A1**: 12-DOF quadruped with proprioceptive sensing
+* **Unitree Go1**: Lightweight quadruped for agile locomotion
+* **Custom Robots**: Add your own via configuration files
 
-```yaml
-robot:
-  name: "a1"
-  urdf_path: "resources/robots/a1/a1.urdf"
+## Supported Environments
 
-control:
-  type: "position"
-  action_scale: 0.25
-  stiffness:
-    hip: 20.0
-    thigh: 20.0  
-    calf: 20.0
+* **Flat Parkour**: Basic locomotion on flat terrain
+* **Rough Parkour**: Navigation through uneven terrain with obstacles
+* **Custom Environments**: Define your own via configuration
 
-rewards:
-  linear_velocity_xy: 1.0
-  torques: -1e-5
-  orientation: -5.0
-```
+## Algorithms
 
-### Environment Configuration (configs/environments/parkour.yaml)
-
-```yaml
-environment:
-  name: "parkour"
-  
-terrain:
-  type: "procedural"
-  size: [100.0, 100.0]
-  obstacles:
-    stairs:
-      probability: 0.2
-      height_range: [0.05, 0.3]
-    gaps:
-      probability: 0.1
-      width_range: [0.2, 0.8]
-
-curriculum:
-  enabled: true
-  terrain_difficulty:
-    initial: 0.0
-    final: 1.0
-```
-
-### Training Configuration (configs/training/ppo.yaml)
-
-```yaml
-algorithm:
-  name: "ppo"
-  learning_rate: 3.0e-4
-  num_learning_iterations: 5000
-  
-checkpoints:
-  save_interval: 100
-  
-evaluation:
-  enabled: true
-  interval: 100
-```
+* **PPO (Proximal Policy Optimization)**: Stable policy gradient method
+* **Extensible**: Easy to add new algorithms following the same interface
 
 ## Development
 
 ### Code Quality
 
-The project uses several tools to ensure code quality:
+The project enforces strict code quality standards:
 
 ```bash
 # Format code
-pdm run black src tests
-pdm run isort src tests
+pdm run format
 
-# Lint code  
-pdm run ruff check src tests
-
-# Type checking
-pdm run mypy src
+# Lint code
+pdm run lint
 
 # Run tests
-pdm run pytest
+pdm run test
 
-# Run tests with coverage
-pdm run pytest --cov=luwu --cov-report=html
+# Check coverage
+pdm run coverage
+
+# Run all checks
+pdm run all
 ```
 
-### Pre-commit Hooks
+### Testing
 
-Install pre-commit hooks to automatically format and lint code:
+Tests are organized by component with >90% coverage requirement:
 
 ```bash
-pdm install -G dev
-pre-commit install
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_config.py
+
+# Run with coverage
+pytest --cov=luwu --cov-report=html
 ```
 
 ### Adding New Robots
 
-1. Create a new robot configuration file in `configs/robots/new_robot.yaml`
-2. Add URDF and other assets to `resources/robots/new_robot/`
-3. The framework will automatically detect and load the new robot
+1. Create URDF/XML model files
+2. Add configuration in `configs/robots/your_robot.yaml`
+3. Update joint mappings and physical parameters
+4. Test with existing environments
 
 ### Adding New Environments
 
-1. Create environment configuration in `configs/environments/new_env.yaml`
-2. Implement environment-specific logic if needed
-3. The environment will be available for training
+1. Define environment in `configs/environments/your_env.yaml`
+2. Specify terrain parameters and reward components
+3. Implement custom reward functions if needed
+4. Test with existing robots
 
-## Project Structure
+### Adding New Simulation Backends
 
-```
-luwu/
-├── configs/                 # Configuration files
-│   ├── robots/             # Robot configurations
-│   ├── environments/       # Environment configurations
-│   ├── training/           # Training configurations
-│   └── settings.yaml       # Main settings
-├── src/luwu/               # Source code
-│   ├── domain/             # Core business logic
-│   ├── application/        # Application services
-│   ├── infrastructure/     # External systems
-│   └── interfaces/         # External interfaces
-├── tests/                  # Test suite
-├── resources/              # Robot assets and resources
-└── logs/                   # Training logs and checkpoints
-```
+1. Implement `SimulationBackend` interface
+2. Add backend-specific initialization and stepping
+3. Register in simulation factory
+4. Add tests and documentation
 
-## Comparison with Original
+## Hardware Requirements
 
-### Improvements over windranger/legged_gym:
+* **GPU**: RTX 5080 or equivalent CUDA-capable GPU
+* **Memory**: 16GB+ RAM recommended for 4096 parallel environments
+* **Storage**: 10GB+ for models, logs, and checkpoints
 
-1. **Modern Simulation**: Uses Isaac Sim/Lab instead of archived Isaac Gym
-2. **Python Version**: Supports Python 3.10+ instead of being limited to 3.8
-3. **Configuration System**: External configuration using dynaconf vs hardcoded values
-4. **Clean Architecture**: DDD design vs monolithic structure
-5. **Unified Tracking**: Both W&B and TensorBoard vs W&B only
-6. **Better Testing**: High test coverage vs minimal tests
-7. **Modern Tooling**: PDM, Black, Ruff vs older tools
-8. **Type Safety**: Full type hints vs no type annotations
+## Dependencies
 
-### Migration from windranger:
+* **Core**: PyTorch, NumPy, Gymnasium
+* **Simulation**: MuJoCo, Isaac Sim/Lab (optional)
+* **Configuration**: Dynaconf, Pydantic
+* **Tracking**: WandB, TensorBoard
+* **Quality**: Black, isort, Ruff, MyPy, pytest
 
-The framework is designed to be compatible with existing robot configurations and training setups from the original windranger project, but with improved organization and extensibility.
+## License
+
+MIT License - see LICENSE file for details.
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes with tests
-4. Ensure code quality checks pass
-5. Commit your changes (`git commit -am 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+2. Create a feature branch
+3. Make changes following code quality standards
+4. Add tests for new functionality
+5. Submit a pull request
 
-## License
+## Citation
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+If you use LuWu in your research, please cite:
 
-## Acknowledgments
+```bibtex
+@software{luwu2025,
+  title={LuWu: Advanced Legged Robot Parkour Training System},
+  author={ZheyangXu},
+  year={2025},
+  url={https://github.com/ZheyangXu/zouyu}
+}
+```
 
-* Based on the original legged_gym and rsl_rl projects
-* Inspired by the windranger project structure
-* Built for modern robotics research and development
+## Support
+
+* **Issues**: Report bugs and request features on GitHub
+* **Discussions**: Join community discussions
+* **Documentation**: Comprehensive docs in `docs/` directory

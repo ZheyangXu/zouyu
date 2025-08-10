@@ -1,1 +1,5 @@
-"""Interfaces layer - External interfaces and adapters."""
+"""Interfaces package."""
+
+from luwu.interfaces import cli
+
+__all__ = ["cli"]
