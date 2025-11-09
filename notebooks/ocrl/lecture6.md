@@ -17,11 +17,13 @@ $$P(x) = \lVert C(x) \rVert_{1}$$
 Now just do Armijo on $P(x)$:
 
   $$\begin{array}{l}
+
     \alpha = 1 \\
     \text{while } P(x+\alpha\triangle x) > P(x) + b\alpha\triangledown P(x)^{T}\triangle x \\
     \quad \alpha \leftarrow \theta\alpha \\
     end \\
     x \leftarrow x + \alpha \triangle x
+
   \end{array}$$
 
 How about constrained optimization?

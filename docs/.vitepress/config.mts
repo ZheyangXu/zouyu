@@ -45,6 +45,12 @@ export default defineConfig({
           link: "/robotics/simulation/",
         },
       ],
+      "/control-theory/": [
+        {
+          text: "模型预测控制",
+          link: "/control-theory/mpc",
+        },
+      ],
       "/robotics-development/": [
         {
           text: "ROS2",
