@@ -40,6 +40,6 @@ $$
 \begin{array}{c}
     x_{k+1|k} = A x_{k} + B u_{k|k} \\
     \mathbf{z}_{k+1|k} = C x_{k+1|k} = C A x_{k} + C B u_{k|k}
-\end{array}{c}
+\end{array}
 \end{equation}
 $$
