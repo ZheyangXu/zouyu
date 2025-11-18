@@ -1,250 +1,135 @@
-# Luwu - Advanced Legged Robot Parkour Training
+# Template for Isaac Lab Projects
 
-Luwu is a modular and extensible framework for training legged robots to perform parkour tasks using reinforcement learning. Built with Isaac Sim and Isaac Lab, it provides a modern alternative to the archived Isaac Gym.
+## Overview
 
-## Features
+This project/repository serves as a template for building projects or extensions based on Isaac Lab.
+It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
 
-* 🤖 **Multi-Robot Support**: Support for various legged robots (A1, Go1, ANYmal, etc.)
-* 🏃 **Parkour Training**: Specialized for challenging parkour environments with obstacles
-* ⚙️ **Configuration-Driven**: All robot and environment settings are externally configurable using YAML/JSON/TOML
-* 📊 **Unified Tracking**: Support for both W&B and TensorBoard experiment tracking
-* 🏗️ **Clean Architecture**: Follows Domain-Driven Design (DDD) principles
-* 🧪 **High Test Coverage**: Comprehensive test suite with >90% coverage
-* 🛠️ **Developer-Friendly**: Modern Python with type hints, Black, isort, and Ruff formatting
-* 📦 **PDM Management**: Uses PDM for modern Python dependency management
+**Key Features:**
 
-## Architecture
+- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
+- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
 
-The project follows Domain-Driven Design (DDD) with clear separation of concerns:
+**Keywords:** extension, template, isaaclab
 
-```
-src/luwu/
-├── domain/          # Core business logic and entities
-├── application/     # Application services and use cases  
-├── infrastructure/  # External systems (config, tracking, etc.)
-└── interfaces/      # External interfaces and adapters
-```
+## Installation
 
-## Quick Start
+- Install Isaac Lab by following the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html).
+  We recommend using the conda or uv installation as it simplifies calling Python scripts from the terminal.
 
-### Installation
+- Clone or copy this project/repository separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
 
-```bash
-# Clone the repository
-cd luwu
+- Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
 
-# Install dependencies with PDM
-pdm install
+    ```bash
+    # use 'PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+    python -m pip install -e source/luwu
 
-# Install development dependencies
-pdm install -G dev
+- Verify that the extension is correctly installed by:
 
-# Install pre-commit hooks (optional)
-pre-commit install
-```
+    - Listing the available tasks:
 
-### Configuration
+        Note: It the task name changes, it may be necessary to update the search pattern `"Template-"`
+        (in the `scripts/list_envs.py` file) so that it can be listed.
 
-Create or modify configuration files in the `configs/` directory:
+        ```bash
+        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+        python scripts/list_envs.py
+        ```
 
-* `configs/robots/` - Robot-specific configurations
-* `configs/environments/` - Environment configurations  
-* `configs/training/` - Training algorithm configurations
-* `configs/settings.yaml` - Main project settings
+    - Running a task:
 
-### Training
+        ```bash
+        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+        python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
+        ```
 
-```bash
-# Train with default configuration
-luwu-train
+    - Running a task with dummy agents:
 
-# Train with specific robot and environment
-luwu-train --robot a1 --environment parkour --algorithm ppo
+        These include dummy agents that output zero or random agents. They are useful to ensure that the environments are configured correctly.
 
-# Train with custom experiment name
-luwu-train --experiment-name "my_parkour_experiment"
-```
+        - Zero-action agent
 
-### Playing/Evaluation
+            ```bash
+            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+            python scripts/zero_agent.py --task=<TASK_NAME>
+            ```
+        - Random-action agent
 
-```bash
-# Play a trained model
-luwu-play --robot a1 --checkpoint ./logs/checkpoints/model.pth --render
+            ```bash
+            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+            python scripts/random_agent.py --task=<TASK_NAME>
+            ```
 
-# Evaluate a model
-luwu-eval --robot a1 --checkpoint ./logs/checkpoints/model.pth --episodes 100
-```
+### Set up IDE (Optional)
 
-### Configuration Management
+To setup the IDE, please follow these instructions:
 
-```bash
-# List available configurations
-luwu list-configs
+- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu.
+  When running this task, you will be prompted to add the absolute path to your Isaac Sim installation.
 
-# Validate a configuration setup
-luwu validate --robot a1 --environment parkour --algorithm ppo
-```
+If everything executes correctly, it should create a file .python.env in the `.vscode` directory.
+The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse.
+This helps in indexing all the python modules for intelligent suggestions while writing code.
 
-## Configuration Examples
+### Setup as Omniverse Extension (Optional)
 
-### Robot Configuration (configs/robots/a1.yaml)
+We provide an example UI extension that will load upon enabling your extension defined in `source/luwu/luwu/ui_extension_example.py`.
 
-```yaml
-robot:
-  name: "a1"
-  urdf_path: "resources/robots/a1/a1.urdf"
+To enable your extension, follow these steps:
 
-control:
-  type: "position"
-  action_scale: 0.25
-  stiffness:
-    hip: 20.0
-    thigh: 20.0  
-    calf: 20.0
+1. **Add the search path of this project/repository** to the extension manager:
+    - Navigate to the extension manager using `Window` -> `Extensions`.
+    - Click on the **Hamburger Icon**, then go to `Settings`.
+    - In the `Extension Search Paths`, enter the absolute path to the `source` directory of this project/repository.
+    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source`)
+    - Click on the **Hamburger Icon**, then click `Refresh`.
 
-rewards:
-  linear_velocity_xy: 1.0
-  torques: -1e-5
-  orientation: -5.0
-```
+2. **Search and enable your extension**:
+    - Find your extension under the `Third Party` category.
+    - Toggle it to enable your extension.
 
-### Environment Configuration (configs/environments/parkour.yaml)
+## Code formatting
 
-```yaml
-environment:
-  name: "parkour"
-  
-terrain:
-  type: "procedural"
-  size: [100.0, 100.0]
-  obstacles:
-    stairs:
-      probability: 0.2
-      height_range: [0.05, 0.3]
-    gaps:
-      probability: 0.1
-      width_range: [0.2, 0.8]
-
-curriculum:
-  enabled: true
-  terrain_difficulty:
-    initial: 0.0
-    final: 1.0
-```
-
-### Training Configuration (configs/training/ppo.yaml)
-
-```yaml
-algorithm:
-  name: "ppo"
-  learning_rate: 3.0e-4
-  num_learning_iterations: 5000
-  
-checkpoints:
-  save_interval: 100
-  
-evaluation:
-  enabled: true
-  interval: 100
-```
-
-## Development
-
-### Code Quality
-
-The project uses several tools to ensure code quality:
+We have a pre-commit template to automatically format your code.
+To install pre-commit:
 
 ```bash
-# Format code
-pdm run black src tests
-pdm run isort src tests
-
-# Lint code  
-pdm run ruff check src tests
-
-# Type checking
-pdm run mypy src
-
-# Run tests
-pdm run pytest
-
-# Run tests with coverage
-pdm run pytest --cov=luwu --cov-report=html
+pip install pre-commit
 ```
 
-### Pre-commit Hooks
-
-Install pre-commit hooks to automatically format and lint code:
+Then you can run pre-commit with:
 
 ```bash
-pdm install -G dev
-pre-commit install
+pre-commit run --all-files
 ```
 
-### Adding New Robots
+## Troubleshooting
 
-1. Create a new robot configuration file in `configs/robots/new_robot.yaml`
-2. Add URDF and other assets to `resources/robots/new_robot/`
-3. The framework will automatically detect and load the new robot
+### Pylance Missing Indexing of Extensions
 
-### Adding New Environments
+In some VsCode versions, the indexing of part of the extensions is missing.
+In this case, add the path to your extension in `.vscode/settings.json` under the key `"python.analysis.extraPaths"`.
 
-1. Create environment configuration in `configs/environments/new_env.yaml`
-2. Implement environment-specific logic if needed
-3. The environment will be available for training
-
-## Project Structure
-
-```
-luwu/
-├── configs/                 # Configuration files
-│   ├── robots/             # Robot configurations
-│   ├── environments/       # Environment configurations
-│   ├── training/           # Training configurations
-│   └── settings.yaml       # Main settings
-├── src/luwu/               # Source code
-│   ├── domain/             # Core business logic
-│   ├── application/        # Application services
-│   ├── infrastructure/     # External systems
-│   └── interfaces/         # External interfaces
-├── tests/                  # Test suite
-├── resources/              # Robot assets and resources
-└── logs/                   # Training logs and checkpoints
+```json
+{
+    "python.analysis.extraPaths": [
+        "<path-to-ext-repo>/source/luwu"
+    ]
+}
 ```
 
-## Comparison with Original
+### Pylance Crash
 
-### Improvements over windranger/legged_gym:
+If you encounter a crash in `pylance`, it is probable that too many files are indexed and you run out of memory.
+A possible solution is to exclude some of omniverse packages that are not used in your project.
+To do so, modify `.vscode/settings.json` and comment out packages under the key `"python.analysis.extraPaths"`
+Some examples of packages that can likely be excluded are:
 
-1. **Modern Simulation**: Uses Isaac Sim/Lab instead of archived Isaac Gym
-2. **Python Version**: Supports Python 3.10+ instead of being limited to 3.8
-3. **Configuration System**: External configuration using dynaconf vs hardcoded values
-4. **Clean Architecture**: DDD design vs monolithic structure
-5. **Unified Tracking**: Both W&B and TensorBoard vs W&B only
-6. **Better Testing**: High test coverage vs minimal tests
-7. **Modern Tooling**: PDM, Black, Ruff vs older tools
-8. **Type Safety**: Full type hints vs no type annotations
-
-### Migration from windranger:
-
-The framework is designed to be compatible with existing robot configurations and training setups from the original windranger project, but with improved organization and extensibility.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes with tests
-4. Ensure code quality checks pass
-5. Commit your changes (`git commit -am 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-* Based on the original legged_gym and rsl_rl projects
-* Inspired by the windranger project structure
-* Built for modern robotics research and development
+```json
+"<path-to-isaac-sim>/extscache/omni.anim.*"         // Animation packages
+"<path-to-isaac-sim>/extscache/omni.kit.*"          // Kit UI tools
+"<path-to-isaac-sim>/extscache/omni.graph.*"        // Graph UI tools
+"<path-to-isaac-sim>/extscache/omni.services.*"     // Services tools
+...
+```
