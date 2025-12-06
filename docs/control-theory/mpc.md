@@ -163,7 +163,7 @@ $$
 
 $$
 \begin{equation}
-\mathbf{\underbar{z}} = O x_{k} + M \underbar{u}
+\mathbf{z} = O x_{k} + M u
 \end{equation}
 $$
 
@@ -172,8 +172,8 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-\mathbf{\underbar{z}} = \left[ \begin{array}{c} \mathbf{z}_{k+1|k} \\ \mathbf{z}_{k+2|k} \\ \mathbf{z}_{k+3|k} \\ \vdots \\ \mathbf{z}_{k+f|k} \end{array} \right], \quad
-\underbar{u} = \left[ \begin{array}{c} u_{k|k} \\ u_{k+1|k} \\ u_{k+2|k} \\ \vdots \\ u_{k+v-1|k} \end{array} \right], \quad
+\mathbf{z} = \left[ \begin{array}{c} \mathbf{z}_{k+1|k} \\ \mathbf{z}_{k+2|k} \\ \mathbf{z}_{k+3|k} \\ \vdots \\ \mathbf{z}_{k+f|k} \end{array} \right], \quad
+u = \left[ \begin{array}{c} u_{k|k} \\ u_{k+1|k} \\ u_{k+2|k} \\ \vdots \\ u_{k+v-1|k} \end{array} \right], \quad
 O = \left[ \begin{array}{c} C A \\ C A^{2} \\ C A^{3} \\ \vdots \\ C A^{f} \end{array} \right], \\
 
 M = \left[ \begin{array}{cccccccc} C B & 0 & 0 & 0 & \ldots & 0 \\ C A B & C B & 0 & 0 & \ldots & 0 \\ C A^{2} B & C A B & CB & 0 & \ldots & 0 \\ \vdots & \vdots & \vdots & \ldots & \ddots & \vdots \\  CA^{v-1}B & CA^{v-2}B & CA^{v-3}B & \ldots & CAB & CB \\ CA^{v}B & CA^{v-1}B & CA^{v-2}B & \ldots & CA^2B & C\bar{A}_{v+1, v}B \\ \vdots & \vdots & \vdots & \ldots & \ddots & \vdots \\ C A^{f} B & C A^{f-1} B & CA^{f-2}B & \ldots & C A^{f-v+1} B & C\bar{A}_{f, v}B \end{array} \right]
@@ -189,22 +189,22 @@ z_{k+1}^{d}, \quad z_{k+2}^{d}, \quad z_{k+3}^{d}, \quad \ldots, \quad z_{k+f}^{
 \end{equation}
 $$
 
-其中, 上标 $d$ 表示该输出为期望值。令向量 $\underbar{z}^d$ 定义为
+其中, 上标 $d$ 表示该输出为期望值。令向量 $z^d$ 定义为
 
 $$
 \begin{equation}
-\underbar{z}^d = \left[ \begin{array}{c} z_{k+1}^{d} \\ z_{k+2}^{d} \\ z_{k+3}^{d} \\ \vdots \\ z_{k+f}^{d} \end{array} \right]
+z^d = \left[ \begin{array}{c} z_{k+1}^{d} \\ z_{k+2}^{d} \\ z_{k+3}^{d} \\ \vdots \\ z_{k+f}^{d} \end{array} \right]
 \end{equation}
 $$
 
-一种自然的建模方式是确定在等式 (15) 中定义的控制输入向量 $\underbar{u}$, 使下列代价函数达到最小值
+一种自然的建模方式是确定在等式 (15) 中定义的控制输入向量 $u$, 使下列代价函数达到最小值
 
 $$\begin{equation}
-\min\limits_{\underbar{u}} \left\| \underbar{z}^d - \underbar{z} \right\|_{2} = \min\limits_{\underbar{u}} (\underbar{z}^d - \underbar{z})^{T} (\underbar{z}^d - \underbar{z})
+\min\limits_{u} \left\| z^d - z \right\|_{2} = \min\limits_{u} (z^d - z)^{T} (z^d - z)
 \end{equation}
 $$
 
-其中, $\underbar{z}$ 在等式 (15) 中定义。然而, 该作法的问题在于我们无法约束控制输入 $\underbar{u}$ 的幅值。控制输入可能非常大, 因而在实际中无法施加, 或者导致执行器饱和, 从而在反馈控制环中造成严重后果。因此, 我们需要在代价函数中引入对控制输入的惩罚。此外, 需要在代价函数 (18) 中引入权重, 以便更好地控制算法的收敛性。
+其中, $z$ 在等式 (15) 中定义。然而, 该作法的问题在于我们无法约束控制输入 $u$ 的幅值。控制输入可能非常大, 因而在实际中无法施加, 或者导致执行器饱和, 从而在反馈控制环中造成严重后果。因此, 我们需要在代价函数中引入对控制输入的惩罚。此外, 需要在代价函数 (18) 中引入权重, 以便更好地控制算法的收敛性。
 
 对控制输入实施惩罚的代价函数部分为
 
@@ -255,7 +255,7 @@ $$
 
 $$
 \begin{equation}
-\underbar{W}_1 \underbar{u}
+W_1 u
 \end{equation}
 $$
 
@@ -263,7 +263,7 @@ $$
 
 $$
 \begin{equation}
-\underbar{W}_1 = \begin{bmatrix}
+W_1 = \begin{bmatrix}
 I & 0 & 0 & 0 & \ldots & 0 \\
 - I & I & 0 & 0 & \ldots & 0 \\
 0 & - I & I & 0 & \ldots & 0 \\
@@ -277,7 +277,7 @@ $$
 
 $$
 \begin{equation}
-J_u = (\underbar{W}_1 \underbar{u})^{T} \underbar{W}_2 (\underbar{W}_1 \underbar{u}) = \underbar{u}^{T} \underbar{W}_1^{T} \underbar{W}_2 \underbar{W}_1 \underbar{u} = \underbar{u}^{T} \underbar{W}_3 \underbar{u}
+J_u = (W_1 u)^{T} W_2 (W_1 u) = u^{T} W_1^{T} W_2 W_1 u = u^{T} W_3 u
 \end{equation}
 $$
 
@@ -286,8 +286,8 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-    \underbar{W}_3 = \underbar{W}_1^{T} \underbar{W}_2 \underbar{W}_1 \\
-    \underbar{W}_2 = \begin{bmatrix}
+    W_3 = W_1^{T} W_2 W_1 \\
+    W_2 = \begin{bmatrix}
     Q_0 & 0 & 0 & 0 & \ldots & 0 \\
     0 & Q_1 & 0 & 0 & \ldots & 0 \\
     0 & 0 & Q_2 & 0 & \ldots & 0 \\
@@ -298,14 +298,14 @@ $$
 \end{equation}
 $$
 
-其中矩阵 $\underbar{W}_2$ 为块对角矩阵, 主对角块为 $Q_i, \quad i=1, 2, \ldots, v-1$.
+其中矩阵 $W_2$ 为块对角矩阵, 主对角块为 $Q_i, \quad i=1, 2, \ldots, v-1$.
 
 接下来引入与跟踪误差对应的代价函数部分
 
 $$
 \begin{equation}
 \begin{array}{l}
-   J_z = (\underbar{z}^d_{k+1} - \underbar{z}_{k+1|k})^{T} P_1 (\underbar{z}_{k+1}^d - \underbar{z}_{k+1|k}) + (\underbar{z}^d_{k+2} - \underbar{z}_{k+2|k})^{T} P_2 (\underbar{z}_{k+2}^d - \underbar{z}_{k+2|k}) \\ + \ldots + (\underbar{z}^d_{k+f} - \underbar{z}_{k+f|k})^{T} P_f (\underbar{z}_{k+f}^d - \underbar{z}_{k+f|k})
+   J_z = (z^d_{k+1} - z_{k+1|k})^{T} P_1 (z_{k+1}^d - z_{k+1|k}) + (z^d_{k+2} - z_{k+2|k})^{T} P_2 (z_{k+2}^d - z_{k+2|k}) \\ + \ldots + (z^d_{k+f} - z_{k+f|k})^{T} P_f (z_{k+f}^d - z_{k+f|k})
 \end{array}
 \end{equation}
 $$
@@ -314,7 +314,7 @@ $$
 
 $$
 \begin{equation}
-\underbar{W}_4 = \begin{bmatrix}
+W_4 = \begin{bmatrix}
 P_1 & 0 & 0 & 0 & \ldots & 0 \\
 0 & P_2 & 0 & 0 & \ldots & 0 \\
 0 & 0 & P_3 & 0 & \ldots & 0 \\
@@ -330,9 +330,9 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-J_{\underbar{z}} &= (\underbar{z}^d - \underbar{z})^{T} \underbar{W}_4 (\underbar{z}^d - \underbar{z}) \\ 
- & = (\underbar{z}^d - O x_{k} - M \underbar{u})^{T} \underbar{W}_4 (\underbar{z}^d - O x_{k} - M \underbar{u}) \\
- & = (s - M \underbar{u})^{T} \underbar{W}_4 (s - M \underbar{u}) 
+J_{z} &= (z^d - z)^{T} W_4 (z^d - z) \\ 
+ & = (z^d - O x_{k} - M u)^{T} W_4 (z^d - O x_{k} - M u) \\
+ & = (s - M u)^{T} W_4 (s - M u) 
     
 \end{array}
 \end{equation}
@@ -342,16 +342,16 @@ $$
 
 $$
 \begin{equation}
-s = \underbar{z}^d - O x_{k}
+s = z^d - O x_{k}
 \end{equation}
 $$
 
 
-该部分代价函数用于惩罚期望轨迹与受控轨迹之间的差异。我们分析代价函数 (27) 的这一部分。由于假定状态向量 $x_k$ 已知, 且期望轨迹向量 $\underbar{z}^d$ 给定, 因此可计算等式 (28) 中定义的向量 $\underbar{s}$. 我们的目标是确定向量 $\underbar{u}$. 该向量将通过最小化下列代价函数得到
+该部分代价函数用于惩罚期望轨迹与受控轨迹之间的差异。我们分析代价函数 (27) 的这一部分。由于假定状态向量 $x_k$ 已知, 且期望轨迹向量 $z^d$ 给定, 因此可计算等式 (28) 中定义的向量 $s$. 我们的目标是确定向量 $u$. 该向量将通过最小化下列代价函数得到
 
 $$
 \begin{equation}
-\min\limits_{\underbar{u}} J_{\underbar{z}} + J_{\underbar{u}}
+\min\limits_{u} J_{z} + J_{u}
 \end{equation}
 $$
 
@@ -359,7 +359,7 @@ $$
 
 $$
 \begin{equation}
-\min\limits_{\underbar{u}}((s - M \underbar{u})^{T} \underbar{W}_4 (s - M \underbar{u}) + \underbar{u}^{T} \underbar{W}_3 \underbar{u})
+\min\limits_{u}((s - M u)^{T} W_4 (s - M u) + u^{T} W_3 u)
     
 \end{equation}
 $$
@@ -369,8 +369,8 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-J = (\underbar{s} - M \underbar{u})^{T} \underbar{W}_4 (\underbar{s} - M \underbar{u}) + \underbar{u}^{T} \underbar{W}_3 \underbar{u} \\
-J = \underbar{s}^{T} \underbar{W}_4 \underbar{s} - \underbar{s}^{T} \underbar{W}_4 M \underbar{u} - \underbar{u}^{T} M^{T} \underbar{W}_4 \underbar{s} + \underbar{u}^{T} M^{T} \underbar{W}_4 M \underbar{u} + \underbar{u}^{T} \underbar{W}_3 \underbar{u} \\
+J = (s - M u)^{T} W_4 (s - M u) + u^{T} W_3 u \\
+J = s^{T} W_4 s - s^{T} W_4 M u - u^{T} M^{T} W_4 s + u^{T} M^{T} W_4 M u + u^{T} W_3 u \\
 \end{array}
 \end{equation}
 $$
@@ -391,11 +391,11 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-\frac{\partial (\underbar{s}^{T} \underbar{W}_4 \underbar{s})}{\partial \underbar{u}} = 0 \\
-\frac{\partial (\underbar{s}^{T} \underbar{W}_4 M \underbar{u})}{\partial \underbar{u}} = M^{T} \underbar{W}_4 \underbar{s} \\
-\frac{\partial (\underbar{u}^{T} M^{T} \underbar{W}_4 \underbar{s})}{\partial \underbar{u}} = M^{T} \underbar{W}_4 \underbar{s} \\
-\frac{\partial (\underbar{u}^{T} M^{T} \underbar{W}_4 M \underbar{u})}{\partial \underbar{u}} = 2 M^{T} \underbar{W}_4 M \underbar{u} \\
-\frac{\partial (\underbar{u}^{T} \underbar{W}_3 \underbar{u})}{\partial \underbar{u}} = 2 \underbar{W}_3 \underbar{u} \\
+\frac{\partial (s^{T} W_4 s)}{\partial u} = 0 \\
+\frac{\partial (s^{T} W_4 M u)}{\partial u} = M^{T} W_4 s \\
+\frac{\partial (u^{T} M^{T} W_4 s)}{\partial u} = M^{T} W_4 s \\
+\frac{\partial (u^{T} M^{T} W_4 M u)}{\partial u} = 2 M^{T} W_4 M u \\
+\frac{\partial (u^{T} W_3 u)}{\partial u} = 2 W_3 u \\
 \end{array}
 \end{equation}
 $$
@@ -404,15 +404,15 @@ $$
 
 $$
 \begin{equation}
-\frac{\partial J}{\partial \underbar{u}} = - 2 M^{T} \underbar{W}_4 \underbar{s} + 2 M^{T} \underbar{W}_4 M \underbar{u} + 2 \underbar{W}_3 \underbar{u}
+\frac{\partial J}{\partial u} = - 2 M^{T} W_4 s + 2 M^{T} W_4 M u + 2 W_3 u
 \end{equation}
 $$
 
-为了在 $\underbar{u}$ 上找到代价函数的最小值, 令
+为了在 $u$ 上找到代价函数的最小值, 令
 
 $$
 \begin{equation}
-\frac{\partial J}{\partial \underbar{u}} = 0
+\frac{\partial J}{\partial u} = 0
 \end{equation}
 $$
 
@@ -421,9 +421,9 @@ $$
 $$
 \begin{equation}
 \begin{array}{l}
-   \frac{\partial J}{\underbar{u}} = - 2 M^{T} \underbar{W}_4 \underbar{s} + 2 M^{T} \underbar{W}_4 M \underbar{u} + 2 \underbar{W}_3 \underbar{u} = 0 \\
-   -2 M^{T} \underbar{W}_4 \underbar{s} + 2 (M^{T} \underbar{W}_4 M + \underbar{W}_3) \underbar{u} = 0 \\
-   (M^{T} \underbar{W}_4 M + \underbar{W}_3) \underbar{u} = M^{T} \underbar{W}_4 \underbar{s} 
+   \frac{\partial J}{u} = - 2 M^{T} W_4 s + 2 M^{T} W_4 M u + 2 W_3 u = 0 \\
+   -2 M^{T} W_4 s + 2 (M^{T} W_4 M + W_3) u = 0 \\
+   (M^{T} W_4 M + W_3) u = M^{T} W_4 s 
 \end{array}
 
 \end{equation}
@@ -433,15 +433,15 @@ $$
 
 $$
 \begin{equation}
-\hat{\underbar{u}} = (M^{T} \underbar{W}_4 M + \underbar{W}_3)^{-1} M^{T} \underbar{W}_4 \underbar{s}
+\hat{u} = (M^{T} W_4 M + W_3)^{-1} M^{T} W_4 s
 \end{equation}
 $$
 
-可以证明该解确实将代价函数 $J$ 最小化。可通过计算 Hessian 矩阵并证明其正定性来完成。解 $\hat{\underbar{u}}$ 可写为
+可以证明该解确实将代价函数 $J$ 最小化。可通过计算 Hessian 矩阵并证明其正定性来完成。解 $\hat{u}$ 可写为
 
 $$
 \begin{equation}
-\hat{\underbar{u}} = \begin{bmatrix}
+\hat{u} = \begin{bmatrix}
 \hat{u}_{k|k} \\
 \hat{u}_{k+1|k} \\
 \hat{u}_{k+2|k} \\
@@ -456,7 +456,7 @@ $$
 
 推导得到的模型预测控制算法可概括如下.
 
-步骤 1: 在时刻 $k$, 基于已知状态向量 $x_k$ 以及系统矩阵 $A,B,C$, 构造提升矩阵并计算式 (42) 所给出的解 $\hat{\underbar{u}}$.
+步骤 1: 在时刻 $k$, 基于已知状态向量 $x_k$ 以及系统矩阵 $A,B,C$, 构造提升矩阵并计算式 (42) 所给出的解 $\hat{u}$.
 
 步骤 2: 取该解的首个分量 $\hat{u}_{k|k}$ 并施加于系统.
 
