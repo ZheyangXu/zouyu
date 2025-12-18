@@ -26,7 +26,21 @@ export default defineConfig({
       },
       {
         text: "机器人开发",
-        link: "/robotics-development/",
+        // link: "/robotics-development/",
+        items: [
+          {
+            text: "ROS2",
+            link: "/robotics-development/ros2/",
+          },
+          {
+            text: "Mujoco",
+            link: "/robotics-development/mujoco/",
+          },
+          {
+            text: "Isaac Lab",
+            link: "/robotics-development/isaac/",
+          },
+        ],
       },
       {
         text: "BLOG",
@@ -79,6 +93,34 @@ export default defineConfig({
             {
               text: "建模",
               link: "/robotics-development/mujoco/modeling/",
+            },
+          ],
+        },
+      ],
+      "/robotics-development/isaac/": [
+        {
+          text: "Isaac Lab",
+          link: "/robotics-development/isaac/getting-started/",
+          items: [
+            {
+              text: "环境设计背景",
+              link: "/robotics-development/isaac/getting-started/environment-design-background/",
+            },
+            {
+              text: "Classes and Configs",
+              link: "/robotics-development/isaac/getting-started/classes-and-configs/",
+            },
+            {
+              text: "设计环境",
+              link: "/robotics-development/isaac/getting-started/environment-design/",
+            },
+            {
+              text: "训练 Jetbot",
+              link: "/robotics-development/isaac/getting-started/training-the-jetbot-gt/",
+            },
+            {
+              text: "探索 RL 问题",
+              link: "/robotics-development/isaac/getting-started/exploring-the-rl-problem/",
             },
           ],
         },
