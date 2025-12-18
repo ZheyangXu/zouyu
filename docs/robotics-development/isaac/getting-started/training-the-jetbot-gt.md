@@ -83,7 +83,7 @@ def _setup_scene(self):
 
 幸运的是, Isaac Lab 提供了根据旋转轴和角度生成四元数的工具函数：:func: `isaaclab.utils.math.quat_from_axis_angle` , 所以真正棘手的只有确定角度. 
 
-![Useful vector definitions for training](../../_static/setup/walkthrough_training_vectors.svg)
+![训练向量](../../../public/walkthrough_training_vectors.png)
 
 yaw 是围绕 z 轴定义的, yaw 为 0 时指向 x 轴, 正角度逆时针. 指令向量的 x、y 分量给出了该角的正切, 因此需要该比值的 *arctangent* 来得到 yaw. 
 
@@ -173,4 +173,4 @@ def _reset_idx(self, env_ids: Sequence[int] | None):
 
 就这样！我们现在既能生成指令, 也能可视化 Jetbot 的朝向, 可以开始微调观测和奖励了. 
 
-![Visualization of the command markers](../../_static/setup/walkthrough_1_2_arrows.jpg)
+![箭头](../../../public/walkthrough_1_2_arrows.png)
