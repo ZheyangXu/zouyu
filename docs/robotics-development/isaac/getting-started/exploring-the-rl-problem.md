@@ -1,6 +1,6 @@
 ## 强化学习问题
 
-Jetbot 的控制命令是一个单位向量，指定期望的驾驶方向。我们必须让智能体感知到这个指令，从而能够相应地调整动作。实现方式有很多，最简单的“零阶”方法是直接修改观测空间，将指令纳入观测。首先，**edit the `IsaacLabTutorialEnvCfg` to set the observation space to 9**：机器人在世界坐标系下的速度向量包含线速度和角速度，共 6 个维度，将命令向量附加到这个速度向量后，总共 9 个维度。
+Jetbot 的控制命令是一个单位向量，指定期望的驾驶方向。我们必须让智能体感知到这个指令，从而能够相应地调整动作。实现方式有很多，最简单的“零阶”方法是直接修改观测空间，将指令纳入观测。首先，编辑 `IsaacLabTutorialEnvCfg` 来设置 observation space 为 9：机器人在世界坐标系下的速度向量包含线速度和角速度，共 6 个维度，将命令向量附加到这个速度向量后，总共 9 个维度。
 
 接下来，只需在获取观测时完成这个拼接。同时，我们还需要计算后续要用到的前向向量。Jetbot 的前向向量是 x 轴，将 `root_link_quat_w` 应用于 `[1,0,0]` ，即可得到世界坐标系下的前向向量。将 `_get_observations` 方法替换为如下代码：
 
@@ -55,7 +55,7 @@ def _get_observations(self) -> dict:
     return observations
 ```
 
-同时需要 **edit the `IsaacLabTutorialEnvCfg` to set the observation space back to 3**，包含点积、叉积 z 分量以及前向速度。
+同时需要 编辑 `IsaacLabTutorialEnvCfg` 来设置 observation space 回 3，包含点积、叉积 z 分量以及前向速度。
 
 点积（内积）用一个标量量化两个向量的对齐程度：同向且高度对齐时为大的正值，反向对齐时为大的负值，垂直时为 0。因此前向向量与命令向量的内积可以告诉我们“面对命令”的程度，但无法说明应该向哪一侧转向以改善对齐。
 

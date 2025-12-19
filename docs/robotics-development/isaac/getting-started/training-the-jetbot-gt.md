@@ -1,12 +1,12 @@
 # 训练 Jetbot
 
-在环境已定义的基础上, 我们现在可以开始调整观测与奖励, 以训练一个策略来作为 Jetbot 的控制器. 作为用户, 我们希望能够指定 Jetbot 行驶的目标方向, 并让车轮转动, 使机器人尽可能快速地朝该方向行驶. 如何用 **Reinforcement Learning (RL)** 实现这一点？如果你想直接查看本阶段的最终结果, 可以访问[教程仓库的这个分支](https://github.com/isaac-sim/IsaacLabTutorial/tree/jetbot-intro-1-2). 
+在环境已定义的基础上, 我们现在可以开始调整观测与奖励, 以训练一个策略来作为 Jetbot 的控制器. 作为用户, 我们希望能够指定 Jetbot 行驶的目标方向, 并让车轮转动, 使机器人尽可能快速地朝该方向行驶. 如何用 **Reinforcement Learning (RL)** 实现这一点？如果你想直接查看本阶段的最终结果, 可以访问[教程仓库的这个分支](https://github.com/isaac-sim/IsaacLabTutorial/tree/jetbot-intro-1-2).
 
 ## 扩展环境
 
-首先需要为 stage 上的每个 Jetbot 创建设置指令的逻辑. 每条指令都是一个单位向量, 且我们需要为 stage 上每个机器人克隆各准备一条指令, 也就是一个形状为 `[num_envs, 3]` 的张量. 尽管 Jetbot 只在 2D 平面上运动, 但使用 3D 向量可以利用 Isaac Lab 提供的全部数学工具. 
+首先需要为 stage 上的每个 Jetbot 创建设置指令的逻辑. 每条指令都是一个单位向量, 且我们需要为 stage 上每个机器人克隆各准备一条指令, 也就是一个形状为 `[num_envs, 3]` 的张量. 尽管 Jetbot 只在 2D 平面上运动, 但使用 3D 向量可以利用 Isaac Lab 提供的全部数学工具.
 
-同样, 设置可视化也很有帮助, 这样在训练和推理时更容易看出策略在做什么. 这里我们定义两个箭头 `VisualizationMarkers` ：一个表示机器人的 “forward” 方向, 一个表示指令方向. 策略训练充分后, 这两支箭头应当对齐！在早期就加上这些可视化, 有助于避免“静默的 bug”（不会导致崩溃但行为错误的问题）. 
+同样, 设置可视化也很有帮助, 这样在训练和推理时更容易看出策略在做什么. 这里我们定义两个箭头 `VisualizationMarkers` ：一个表示机器人的 “forward” 方向, 一个表示指令方向. 策略训练充分后, 这两支箭头应当对齐！在早期就加上这些可视化, 有助于避免“静默的 bug”（不会导致崩溃但行为错误的问题）.
 
 首先, 需要定义 `marker` 的配置, 并用该配置实例化 markers. 将以下内容加入 `isaac_lab_tutorial_env.py` 的全局作用域：
 
@@ -35,7 +35,7 @@ def define_markers() -> VisualizationMarkers:
     return VisualizationMarkers(cfg=marker_cfg)
 ```
 
-`VisualizationMarkersCfg` 定义了用作 “marker” 的 USD prim. 任何 prim 都可以, 但通常应尽量保持简单, 因为 `marker` 的克隆会在每个时间步的运行时发生. 原因在于这些 `marker` 仅用于 *debug visualization only*, 并不参与仿真：用户可完全控制何时何地绘制多少 `marker` . NVIDIA 在公开的 nucleus 服务器（路径 `ISAAC_NUCLEUS_DIR` ）上提供了一些简单的 `mesh` , 这里我们选择 `arrow_x.usd` . 
+`VisualizationMarkersCfg` 定义了用作 “marker” 的 USD prim. 任何 prim 都可以, 但通常应尽量保持简单, 因为 `marker` 的克隆会在每个时间步的运行时发生. 原因在于这些 `marker` 仅用于 *debug visualization only*, 并不参与仿真：用户可完全控制何时何地绘制多少 `marker` . NVIDIA 在公开的 nucleus 服务器（路径 `ISAAC_NUCLEUS_DIR` ）上提供了一些简单的 `mesh` , 这里我们选择 `arrow_x.usd` .
 
 若需更详细的 `VisualizationMarkers` 使用示例, 可查看 `markers.py` demo！
 
@@ -79,15 +79,15 @@ def _setup_scene(self):
     self.command_marker_orientations = torch.zeros((self.cfg.scene.num_envs, 4)).cuda()
 ```
 
-大部分代码都是为指令和 marker 做记录, 但指令初始化和偏航角计算值得展开. 指令通过 `torch.randn` 从多元正态分布采样, z 分量固定为 0, 再归一化为单位向量. 为了让指令箭头沿这些向量指向, 需要适当地旋转基础箭头 mesh, 也就是定义一个 `quaternion <https://en.wikipedia.org/wiki/Quaternion>` _ 来让箭头 prim 围绕 z 轴按指令角度旋转. 按惯例, 绕 z 轴的旋转称为 “yaw” 旋转（类似 roll、pitch）. 
+大部分代码都是为指令和 marker 做记录, 但指令初始化和偏航角计算值得展开. 指令通过 `torch.randn` 从多元正态分布采样, z 分量固定为 0, 再归一化为单位向量. 为了让指令箭头沿这些向量指向, 需要适当地旋转基础箭头 mesh, 也就是定义一个 [`quaternion`](https://en.wikipedia.org/wiki/Quaternion) 来让箭头 prim 围绕 z 轴按指令角度旋转. 按惯例, 绕 z 轴的旋转称为 “yaw” 旋转（类似 roll、pitch）.
 
-幸运的是, Isaac Lab 提供了根据旋转轴和角度生成四元数的工具函数：:func: `isaaclab.utils.math.quat_from_axis_angle` , 所以真正棘手的只有确定角度. 
+幸运的是, Isaac Lab 提供了根据旋转轴和角度生成四元数的工具函数：:func: `isaaclab.utils.math.quat_from_axis_angle` , 所以真正棘手的只有确定角度.
 
 ![训练向量](../../../public/walkthrough_training_vectors.png)
 
-yaw 是围绕 z 轴定义的, yaw 为 0 时指向 x 轴, 正角度逆时针. 指令向量的 x、y 分量给出了该角的正切, 因此需要该比值的 *arctangent* 来得到 yaw. 
+yaw 是围绕 z 轴定义的, yaw 为 0 时指向 x 轴, 正角度逆时针. 指令向量的 x、y 分量给出了该角的正切, 因此需要该比值的 *arctangent* 来得到 yaw.
 
-考虑两条指令：A 在第二象限 (-x, y), B 在第四象限 (x, -y). 两者的 y/x 之比相同. 如果不处理这一点, 部分指令箭头会指向与指令相反的方向！本质上, 指令定义在 `[-pi, pi]` , 但 `arctangent` 只在 `[-pi/2, pi/2]` 上定义. 
+考虑两条指令：A 在第二象限 (-x, y), B 在第四象限 (x, -y). 两者的 y/x 之比相同. 如果不处理这一点, 部分指令箭头会指向与指令相反的方向！本质上, 指令定义在 `[-pi, pi]` , 但 `arctangent` 只在 `[-pi/2, pi/2]` 上定义.
 
 为解决这一问题, 我们根据指令所在象限为 yaw 加上或减去 `pi` ：
 
@@ -129,7 +129,7 @@ def _visualize_markers(self):
     self.visualization_markers.visualize(loc, rots, marker_indices=indices)
 ```
 
-`VisualizationMarkers` 的 `visualize` 方法就像这个 “draw” 函数. 它接收 marker 的空间变换张量, 以及 `marker_indices` 张量来指定每个 marker 使用哪种原型. 只要这些张量的第一维一致, 就会按指定变换绘制对应 marker, 这就是为什么要将位置、旋转、索引堆叠在一起. 
+`VisualizationMarkers` 的 `visualize` 方法就像这个 “draw” 函数. 它接收 marker 的空间变换张量, 以及 `marker_indices` 张量来指定每个 marker 使用哪种原型. 只要这些张量的第一维一致, 就会按指定变换绘制对应 marker, 这就是为什么要将位置、旋转、索引堆叠在一起.
 
 现在只需在 pre physics step 中调用 `_visualize_markers` 让箭头可见. 将 `_pre_physics_step` 改为：
 
@@ -171,6 +171,6 @@ def _reset_idx(self, env_ids: Sequence[int] | None):
     self._visualize_markers()
 ```
 
-就这样！我们现在既能生成指令, 也能可视化 Jetbot 的朝向, 可以开始微调观测和奖励了. 
+就这样！我们现在既能生成指令, 也能可视化 Jetbot 的朝向, 可以开始微调观测和奖励了.
 
 ![箭头](../../../public/walkthrough_1_2_arrows.png)
