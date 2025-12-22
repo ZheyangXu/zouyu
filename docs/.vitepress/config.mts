@@ -66,7 +66,7 @@ export default defineConfig({
           link: "/control-theory/mpc",
         },
       ],
-      "/robotics-development/": [
+      "/robotics-development/ros2": [
         {
           text: "ROS2",
           link: "/robotics-development/ros2/",
@@ -77,9 +77,10 @@ export default defineConfig({
             },
           ],
         },
+      ],
+      "/robotics-development/mujoco/": [
         {
           text: "Mujoco",
-          link: "/robotics-development/mujoco/",
           items: [
             {
               text: "概要",
@@ -100,27 +101,59 @@ export default defineConfig({
       "/robotics-development/isaac/": [
         {
           text: "Isaac Lab",
-          link: "/robotics-development/isaac/getting-started/",
+          link: "/robotics-development/isaac/",
           items: [
             {
-              text: "环境设计背景",
-              link: "/robotics-development/isaac/getting-started/environment-design-background/",
+              text: "快速开始",
+              link: "/robotics-development/isaac/getting-started/",
+              items: [
+                {
+                  text: "环境设计背景",
+                  link: "/robotics-development/isaac/getting-started/environment-design-background/",
+                },
+                {
+                  text: "Classes and Configs",
+                  link: "/robotics-development/isaac/getting-started/classes-and-configs/",
+                },
+                {
+                  text: "设计环境",
+                  link: "/robotics-development/isaac/getting-started/environment-design/",
+                },
+                {
+                  text: "训练 Jetbot",
+                  link: "/robotics-development/isaac/getting-started/training-the-jetbot-gt/",
+                },
+                {
+                  text: "探索 RL 问题",
+                  link: "/robotics-development/isaac/getting-started/exploring-the-rl-problem/",
+                },
+              ],
             },
             {
-              text: "Classes and Configs",
-              link: "/robotics-development/isaac/getting-started/classes-and-configs/",
-            },
-            {
-              text: "设计环境",
-              link: "/robotics-development/isaac/getting-started/environment-design/",
-            },
-            {
-              text: "训练 Jetbot",
-              link: "/robotics-development/isaac/getting-started/training-the-jetbot-gt/",
-            },
-            {
-              text: "探索 RL 问题",
-              link: "/robotics-development/isaac/getting-started/exploring-the-rl-problem/",
+              text: "基础教程",
+              link: "/robotics-development/isaac/tutorials/",
+              items: [
+                {
+                  text: "创建一个空仿真",
+                  link: "/robotics-development/isaac/tutorials/create-empty/",
+                },
+                {
+                  text: "生成多种 Prims",
+                  link: "/robotics-development/isaac/tutorials/spawn_prims/",
+                },
+                {
+                  text: "深入理解应用程序",
+                  link: "/robotics-development/isaac/tutorials/launch-app/",
+                },
+                {
+                  text: "添加新的机器人",
+                  link: "/robotics-development/isaac/tutorials/add-new-robot/",
+                },
+                {
+                  text: "运行刚体对象仿真",
+                  link: "/robotics-development/isaac/tutorials/run-rigid-object/",
+                }
+              ],
             },
           ],
         },
