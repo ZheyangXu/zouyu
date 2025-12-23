@@ -152,7 +152,31 @@ export default defineConfig({
                 {
                   text: "运行刚体对象仿真",
                   link: "/robotics-development/isaac/tutorials/run-rigid-object/",
-                }
+                },
+                {
+                  text: "运行关节对象仿真",
+                  link: "/robotics-development/isaac/tutorials/run-articulation/",
+                },
+                {
+                  text: "运行软体对象仿真",
+                  link: "/robotics-development/isaac/tutorials/run-deformable-object/",
+                },
+                {
+                  text: "运行夹爪对象仿真",
+                  link: "/robotics-development/isaac/tutorials/run-surface-gripper/",
+                },
+                {
+                  text: "创建交互式场景",
+                  link: "/robotics-development/isaac/tutorials/create-scene/",
+                },
+                {
+                  text: "创建基于 Manager 的基础环境",
+                  link: "/robotics-development/isaac/tutorials/create-manager-base-env/",
+                },
+                {
+                  text: "创建基于 Manager 的强化学习环境",
+                  link: "/robotics-development/isaac/tutorials/create-manager-rl-envs/",
+                },
               ],
             },
           ],
