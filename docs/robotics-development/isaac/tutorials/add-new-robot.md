@@ -1,7 +1,3 @@
----
-title: 在 Isaac Lab 中添加新机器人
----
-
 # 在 Isaac Lab 中添加新机器人
 
 在 Isaac Lab 中对一个新机器人进行仿真与训练，通常需要经过多个步骤：首先把机器人导入 Isaac Sim，并把资产（USD articulation）调到适合仿真的状态。
@@ -13,7 +9,7 @@ title: 在 Isaac Lab 中添加新机器人
 
 本教程将围绕“如何在 Isaac Lab 中添加一个新机器人”展开。关键步骤是创建一个 `AssetBaseCfg` （更具体地说，通常是 `ArticulationCfg` ），它用于描述 USD 中的机器人关节/驱动/初始状态等信息，从而把 USD articulation 与 Isaac Lab 中的学习与控制算法对接起来。
 
-## 对应代码
+## 代码
 
 该教程对应 Isaac Lab 仓库中的脚本： `scripts/tutorials/01_assets/add_new_robot.py` 。
 
