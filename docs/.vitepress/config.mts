@@ -177,6 +177,92 @@ export default defineConfig({
                   text: "创建基于 Manager 的强化学习环境",
                   link: "/robotics-development/isaac/tutorials/create-manager-rl-envs/",
                 },
+                {
+                  text: "创建 Direct Workflow 的强化学习环境",
+                  link: "/robotics-development/isaac/tutorials/create-direct-rl-env/",
+                },
+                {
+                  text: "在 Gym 中注册强化学习环境",
+                  link: "/robotics-development/isaac/tutorials/register-rl-env-gym/",
+                },
+                {
+                  text: "运行强化学习训练",
+                  link: "/robotics-development/isaac/tutorials/run-rl-training/",
+                },
+                {
+                  text: "修改现有 Direct RL 环境",
+                  link: "/robotics-development/isaac/tutorials/modify-direct-rl-env/",
+                },
+                {
+                  text: "在 USD 环境中进行策略推理",
+                  link: "/robotics-development/isaac/tutorials/policy-inference-in-usd/",
+                },
+                {
+                  text: "在机器人上添加传感器",
+                  link: "/robotics-development/isaac/tutorials/add-sensors-on-robot/",
+                },
+                {
+                  text: "使用操作空间控制器(OSC)",
+                  link: "/robotics-development/isaac/tutorials/run-osc/",
+                },
+              ],
+            },
+            {
+              text: "How-to 教程",
+              link: "/robotics-development/isaac/how-to/",
+              items: [
+                {
+                  text: "导入新资产",
+                  link: "/robotics-development/isaac/how-to/import-new-asset/",
+                },
+                {
+                  text: "编写资产配置",
+                  link: "/robotics-development/isaac/how-to/write-articulation-cfg/",
+                },
+                {
+                  text: "在仿真中将物理 prim 固定",
+                  link: "/robotics-development/isaac/how-to/make-fixed-prim/",
+                },
+                {
+                  text: "生成多个资产",
+                  link: "/robotics-development/isaac/how-to/multi-asset-spawning/",
+                },
+                {
+                  text: "保存渲染图像与 3D 重投影",
+                  link: "/robotics-development/isaac/how-to/save-camera-output/",
+                },
+                {
+                  text: "估计可运行的相机数量",
+                  link: "/robotics-development/isaac/how-to/estimate-how-many-cameras-can-run/",
+                },
+                {
+                  text: "配置渲染设置",
+                  link: "/robotics-development/isaac/how-to/configure-rendering/",
+                },
+                {
+                  text: "创建可视化标记",
+                  link: "/robotics-development/isaac/how-to/draw-markers/",
+                },
+                {
+                  text: "包装环境",
+                  link: "/robotics-development/isaac/how-to/wrap-rl-env/",
+                },
+                {
+                  text: "添加你自己的学习库",
+                  link: "/robotics-development/isaac/how-to/add-own-library/",
+                },
+                {
+                  text: "录制仿真动画",
+                  link: "/robotics-development/isaac/how-to/record-animation/",
+                },
+                {
+                  text: "在训练期间录制视频片段",
+                  link: "/robotics-development/isaac/how-to/record-video/",
+                },
+                {
+                  text: "课程（Curriculum）工具",
+                  link: "/robotics-development/isaac/how-to/curriculums/",
+                },
               ],
             },
           ],
