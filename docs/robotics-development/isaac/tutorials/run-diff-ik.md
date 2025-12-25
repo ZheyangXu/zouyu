@@ -331,8 +331,6 @@ scene.write_data_to_sim()
 当前与目标末端执行器位姿应会通过坐标系标记（frame markers）进行显示。
 当机器人到达目标位姿后，指令应会切换到脚本中指定的下一个目标位姿。
 
-![run_diff_ik.py 的运行结果](../../_static/tutorials/tutorial_task_space_controller.jpg)
-
 ![alt text](../../../public/tutorial_task_space_controller.png)
 
 要停止仿真，你可以直接关闭窗口，或在终端中按下 `Ctrl+C` 。
