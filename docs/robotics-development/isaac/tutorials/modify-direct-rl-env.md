@@ -159,7 +159,7 @@ class HumanoidEnv(LocomotionEnv):
 > 如果目标机器人不在 Isaac Lab 资产扩展中，可以使用 `isaaclab.assets.ArticulationCfg` 类从 USD 文件加载并配置。
 >
 > - 可参考 [Isaac-Franka-Cabinet-Direct-v0][franka-direct-link] 源码，了解如何从 USD 文件加载并配置机器人。
-> - 关于如何从 URDF 或 MJCF 文件等格式导入资产，请参考 [Importing a New Asset](../../how-to/import_new_asset.html) 教程。
+> - 关于如何从 URDF 或 MJCF 文件等格式导入资产，请参考 Importing a New Asset 教程。
 
 ```rst
 .. literalinclude:: ../../refs/snippets/tutorial_modify_direct_rl_env.py

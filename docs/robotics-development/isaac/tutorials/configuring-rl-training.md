@@ -4,7 +4,7 @@
 
 在 `scripts/reinforcement_learning` 目录下，你可以找到针对不同 RL 学习库的脚本。这些脚本按“学习库名称”组织为不同的子目录；每个子目录通常包含训练脚本（train）与回放脚本（play）。
 
-要让某个学习库与特定任务配合使用，你需要为学习智能体创建一个配置文件。该配置文件用于创建学习智能体实例，并用于配置训练过程。类似于《[注册环境（Registering an Environment）](register_rl_env_gym.md)》中展示的环境注册方式，你也可以通过 `gymnasium.register` 来注册学习智能体的配置入口。
+要让某个学习库与特定任务配合使用，你需要为学习智能体创建一个配置文件。该配置文件用于创建学习智能体实例，并用于配置训练过程。类似于《注册环境（Registering an Environment）》中展示的环境注册方式，你也可以通过 `gymnasium.register` 来注册学习智能体的配置入口。
 
 ## 代码
 
