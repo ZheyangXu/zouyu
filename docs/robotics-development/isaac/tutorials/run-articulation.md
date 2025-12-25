@@ -1,4 +1,3 @@
-
 # 与关节系统（Articulation）交互
 
 本教程演示如何在仿真中与一个**关节式机器人（articulated robot）**交互。它是“与刚体物体交互（tutorial-interact-rigid-object）”教程的延续：在上一节中，我们学习了如何与刚体物体交互；在此基础上，这一节会进一步介绍如何为关节式机器人设置**根状态（root state）**、设置**关节状态（joint state）**，并向机器人施加控制命令。
@@ -23,7 +22,6 @@
 """
 
 """Launch Isaac Sim Simulator first."""
-
 
 import argparse
 
@@ -54,7 +52,6 @@ from isaaclab.sim import SimulationContext
 ##
 from isaaclab_assets import CARTPOLE_CFG  # isort:skip
 
-
 def design_scene() -> tuple[dict, list[list[float]]]:
     """Designs the scene."""
     # Ground-plane
@@ -80,7 +77,6 @@ def design_scene() -> tuple[dict, list[list[float]]]:
     # return the scene information
     scene_entities = {"cartpole": cartpole}
     return scene_entities, origins
-
 
 def run_simulator(sim: sim_utils.SimulationContext, entities: dict[str, Articulation], origins: torch.Tensor):
     """Runs the simulation loop."""
@@ -126,7 +122,6 @@ def run_simulator(sim: sim_utils.SimulationContext, entities: dict[str, Articula
         # Update buffers
         robot.update(sim_dt)
 
-
 def main():
     """Main function."""
     # Load kit helper
@@ -143,7 +138,6 @@ def main():
     print("[INFO]: Setup complete...")
     # Run the simulator
     run_simulator(sim, scene_entities, scene_origins)
-
 
 if __name__ == "__main__":
     # run the main function
@@ -185,7 +179,7 @@ cartpole = Articulation(cfg=cartpole_cfg)
 
 与刚体类似，关节系统同样具有**根状态（root state）**，它对应关节树（articulation tree）中的根刚体。除此之外，关节系统还具有**关节状态（joint state）**，对应各关节的位置与速度。
 
-要重置关节系统，我们先通过 `Articulation.write_root_pose_to_sim` 和 `Articulation.write_root_velocity_to_sim` 设置根状态；再通过 `Articulation.write_joint_state_to_sim` 设置关节位置与速度。最后调用 `Articulation.reset`，用于清空内部缓冲与缓存。
+要重置关节系统，我们先通过 `Articulation.write_root_pose_to_sim` 和 `Articulation.write_root_velocity_to_sim` 设置根状态；再通过 `Articulation.write_joint_state_to_sim` 设置关节位置与速度。最后调用 `Articulation.reset` ，用于清空内部缓冲与缓存。
 
 ```python
 # reset the scene entities
@@ -227,7 +221,7 @@ robot.write_data_to_sim()
 
 #### 更新状态
 
-每个关节系统对象都包含一个 `assets.ArticulationData`，用于存放关节系统的状态。要让内部缓冲区同步到最新仿真状态，需要调用 `assets.Articulation.update`。
+每个关节系统对象都包含一个 `assets.ArticulationData` ，用于存放关节系统的状态。要让内部缓冲区同步到最新仿真状态，需要调用 `assets.Articulation.update` 。
 
 ```python
 # Update buffers
@@ -242,7 +236,7 @@ robot.update(sim_dt)
 ./isaaclab.sh -p scripts/tutorials/01_assets/run_articulation.py
 ```
 
-该命令会打开一个包含地面、灯光以及两个 cart-pole 的场景，它们会以随机方式运动。要停止仿真，可以直接关闭窗口，或在终端按下 `Ctrl+C`。
+该命令会打开一个包含地面、灯光以及两个 cart-pole 的场景，它们会以随机方式运动。要停止仿真，可以直接关闭窗口，或在终端按下 `Ctrl+C` 。
 
 ![alt text](../../../public/tutorial_run_articulation.png)
 
@@ -257,4 +251,3 @@ robot.update(sim_dt)
 # Spawn many different quadrupeds
 ./isaaclab.sh -p scripts/demos/quadrupeds.py
 ```
-

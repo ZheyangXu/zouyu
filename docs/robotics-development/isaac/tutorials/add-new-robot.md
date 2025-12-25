@@ -420,4 +420,3 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
 ::: warning 提示
 官方示例中你可能会看到类似“并非所有 actuator 都已配置”的警告。这在该教程里是预期行为，因为示例没有处理夹爪（gripper）的控制与配置。
 :::
-
