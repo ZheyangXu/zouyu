@@ -1,15 +1,7 @@
-import os
 from dataclasses import MISSING
-from logging import config
-from shlex import join
 
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import (
-    DelayedPDActuator,
-    DelayedPDActuatorCfg,
-    IdealPDActuator,
-    ImplicitActuatorCfg,
-)
+from isaaclab.actuators import DelayedPDActuator, DelayedPDActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
 
@@ -80,16 +72,23 @@ class Cyberdog2UsdFileCfg(sim_utils.UsdFileCfg):
 
 CYBERDOG2_CFG = Cyberdog2ArticulationCfg(
     spawn=Cyberdog2UsdFileCfg(
-        usd_path=f"/opt/zouyu-workspaces/zouyu/assets/cyberdog_robot/cyberdog2.usd",
+        usd_path="/opt/zouyu-workspaces/zouyu/assets/cyberdog_robot/cyberdog2.usd",
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.4),
+        pos=(0.0, 0.0, 0.32),
         joint_pos={
-            "[F,R]R_abad_joint": -0.1,
-            "[F,R]L_abad_joint": 0.1,
-            "F[L,R]_hip_joint": 0.8,
-            "R[L,R]_hip_joint": 1.0,
-            ".*_knee_joint": -1.5,
+            "FR_hip_joint": 0.0,
+            "FR_thigh_joint": 0.66,
+            "FR_calf_joint": -1.17,
+            "FL_hip_joint": 0.0,
+            "FL_thigh_joint": 0.66,
+            "FL_calf_joint": -1.17,
+            "RR_hip_joint": 0.0,
+            "RR_thigh_joint": 0.66,
+            "RR_calf_joint": -1.17,
+            "RL_hip_joint": 0.0,
+            "RL_thigh_joint": 0.66,
+            "RL_calf_joint": -1.17,
         },
         joint_vel={".*": 0.0},
     ),
@@ -102,19 +101,17 @@ CYBERDOG2_CFG = Cyberdog2ArticulationCfg(
         ),
     },
     joint_sdk_names=[
-        "FR_abad_joint",
         "FR_hip_joint",
-        "FR_knee_joint",
-        "FL_abad_joint",
+        "FR_thigh_joint",
+        "FR_calf_joint",
         "FL_hip_joint",
-        "FL_knee_joint",
-        "RR_abad_joint",
+        "FL_thigh_joint",
+        "FL_calf_joint",
         "RR_hip_joint",
-        "RR_knee_joint",
-        "RL_abad_joint",
+        "RR_thigh_joint",
+        "RR_calf_joint",
         "RL_hip_joint",
-        "RL_knee_joint",
-        "RL_hip_joint",
-        "RL_knee_joint",
+        "RL_thigh_joint",
+        "RL_calf_joint",
     ],
 )
