@@ -124,9 +124,9 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-            "static_friction_range": (0.3, 1.2),
-            "dynamic_friction_range": (0.3, 1.2),
-            "restitution_range": (0.0, 0.15),
+            "static_friction_range": (0.3, 0.3),
+            "dynamic_friction_range": (0.3, 0.8),
+            "restitution_range": (0.0, 0.4),
             "num_buckets": 64,
         },
     )
@@ -136,7 +136,7 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names="base"),
-            "mass_distribution_params": (-1.0, 3.0),
+            "mass_distribution_params": (-0.3, 0.3),
             "operation": "add",
         },
     )
@@ -202,7 +202,7 @@ class CommandsCfg:
         rel_standing_envs=0.1,
         debug_vis=True,
         ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.1, 0.1), lin_vel_y=(-0.1, 0.1), ang_vel_z=(-1, 1)
+            lin_vel_x=(-0.1, 0.1), lin_vel_y=(-0.1, 0.1), ang_vel_z=(-3.14, 3.14)
         ),
         limit_ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
             lin_vel_x=(-1.0, 1.0), lin_vel_y=(-0.4, 0.4), ang_vel_z=(-1.0, 1.0)
@@ -216,7 +216,20 @@ class ActionsCfg:
 
     JointPositionAction = mdp.JointPositionActionCfg(
         asset_name="robot",
-        joint_names=[".*"],
+        joint_names=[
+            "FR_hip_joint",
+            "FR_thigh_joint",
+            "FR_calf_joint",
+            "FL_hip_joint",
+            "FL_thigh_joint",
+            "FL_calf_joint",
+            "RR_hip_joint",
+            "RR_thigh_joint",
+            "RR_calf_joint",
+            "RL_hip_joint",
+            "RL_thigh_joint",
+            "RL_calf_joint",
+        ],
         scale=0.25,
         use_default_offset=True,
         clip={".*": (-100.0, 100.0)},
@@ -231,7 +244,6 @@ class ObservationsCfg:
     class PolicyCfg(ObservationGroupCfg):
         """Observations for policy group."""
 
-        # observation term (order preserved)
         base_ang_vel = ObservationTermCfg(
             func=mdp.base_ang_vel,
             scale=0.2,
@@ -307,12 +319,12 @@ class RewardsCfg:
     track_lin_vel_xy = RewardTermCfg(
         func=mdp.track_lin_vel_xy_exp,
         weight=1.5,
-        params={"command_name": "base_velocity", "std": math.sqrt(1)},
+        params={"command_name": "base_velocity", "std": math.sqrt(0.25)},
     )
     track_ang_vel_z = RewardTermCfg(
         func=mdp.track_ang_vel_z_exp,
         weight=0.75,
-        params={"command_name": "base_velocity", "std": math.sqrt(1)},
+        params={"command_name": "base_velocity", "std": math.sqrt(0.25)},
     )
 
     # base
@@ -331,7 +343,23 @@ class RewardsCfg:
         func=mdp.joint_position_penalty,
         weight=-0.7,
         params={
-            "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+            "asset_cfg": SceneEntityCfg(
+                "robot",
+                joint_names=[
+                    "FR_hip_joint",
+                    "FR_thigh_joint",
+                    "FR_calf_joint",
+                    "FL_hip_joint",
+                    "FL_thigh_joint",
+                    "FL_calf_joint",
+                    "RR_hip_joint",
+                    "RR_thigh_joint",
+                    "RR_calf_joint",
+                    "RL_hip_joint",
+                    "RL_thigh_joint",
+                    "RL_calf_joint",
+                ],
+            ),
             "stand_still_scale": 5.0,
             "velocity_threshold": 0.3,
         },
@@ -379,7 +407,7 @@ class RewardsCfg:
             "threshold": 1.0,
             "sensor_cfg": SceneEntityCfg(
                 "contact_forces",
-                body_names=["head.*", ".*_abad", ".*_hip", ".*_knee"],
+                body_names=["head.*", ".*_hip", ".*_thigh", ".*_calf"],
             ),
         },
     )
