@@ -95,7 +95,7 @@ class RobotSceneCfg(InteractiveSceneCfg):
 
     height_scanner = RayCasterCfg(
         prim_path="{ENV_REGEX_NS}/Robot/base",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 20.0)),
+        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 25.0)),
         ray_alignment="yaw",
         pattern_cfg=patterns.GridPatternCfg(resolution=0.1, size=[1.6, 1.0]),
         debug_vis=False,
@@ -124,7 +124,7 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-            "static_friction_range": (0.3, 0.3),
+            "static_friction_range": (0.3, 0.8),
             "dynamic_friction_range": (0.3, 0.8),
             "restitution_range": (0.0, 0.4),
             "num_buckets": 64,
@@ -138,6 +138,7 @@ class EventCfg:
             "asset_cfg": SceneEntityCfg("robot", body_names="base"),
             "mass_distribution_params": (-0.3, 0.3),
             "operation": "add",
+            "recompute_inertia": True,
         },
     )
 
@@ -175,7 +176,7 @@ class EventCfg:
     reset_robot_joints = EventTermCfg(
         func=mdp.reset_joints_by_scale,
         mode="reset",
-        params={"position_range": (1.0, 1.0), "velocity_range": (-0.01, 0.01)},
+        params={"position_range": (1.0, 1.0), "velocity_range": (-1.0, 1.0)},
     )
 
     # interval
@@ -202,7 +203,10 @@ class CommandsCfg:
         rel_standing_envs=0.1,
         debug_vis=True,
         ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
-            lin_vel_x=(-0.1, 0.1), lin_vel_y=(-0.1, 0.1), ang_vel_z=(-3.14, 3.14)
+            lin_vel_x=(-1.0, 1.0),
+            lin_vel_y=(-0.5, 0.5),
+            ang_vel_z=(-0.5, 0.5),
+            heading=(-3.14, 3.14),
         ),
         limit_ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
             lin_vel_x=(-1.0, 1.0), lin_vel_y=(-0.4, 0.4), ang_vel_z=(-1.0, 1.0)
@@ -277,9 +281,6 @@ class ObservationsCfg:
             self.enable_corruption = True
             self.concatenate_terms = True
 
-    # observation groups
-    policy: PolicyCfg = PolicyCfg()
-
     @configclass
     class CriticCfg(ObservationGroupCfg):
         """Observations for critic group."""
@@ -308,6 +309,8 @@ class ObservationsCfg:
         )
         last_action = ObservationTermCfg(func=mdp.last_action, clip=(-100, 100))
 
+    # observation groups
+    policy: PolicyCfg = PolicyCfg()
     critic: CriticCfg = CriticCfg()
 
 
@@ -318,12 +321,12 @@ class RewardsCfg:
     # task
     track_lin_vel_xy = RewardTermCfg(
         func=mdp.track_lin_vel_xy_exp,
-        weight=1.5,
+        weight=2.0,
         params={"command_name": "base_velocity", "std": math.sqrt(0.25)},
     )
     track_ang_vel_z = RewardTermCfg(
         func=mdp.track_ang_vel_z_exp,
-        weight=0.75,
+        weight=1.5,
         params={"command_name": "base_velocity", "std": math.sqrt(0.25)},
     )
 
@@ -331,10 +334,10 @@ class RewardsCfg:
     base_linear_velocity = RewardTermCfg(func=mdp.lin_vel_z_l2, weight=-2.0)
     base_angular_velocity = RewardTermCfg(func=mdp.ang_vel_xy_l2, weight=-0.05)
     joint_vel = RewardTermCfg(func=mdp.joint_vel_l2, weight=-0.001)
-    joint_acc = RewardTermCfg(func=mdp.joint_acc_l2, weight=-2.5e-7)
+    # joint_acc = RewardTermCfg(func=mdp.joint_acc_l2, weight=-2.5e-7)
     joint_torques = RewardTermCfg(func=mdp.joint_torques_l2, weight=-2e-4)
     action_rate = RewardTermCfg(func=mdp.action_rate_l2, weight=-0.1)
-    dof_pos_limits = RewardTermCfg(func=mdp.joint_pos_limits, weight=-10.0)
+    dof_pos_limits = RewardTermCfg(func=mdp.joint_pos_limits, weight=-1.0)
     energy = RewardTermCfg(mdp.energy, weight=-2e-5)
 
     # robot
@@ -368,7 +371,7 @@ class RewardsCfg:
     # feet
     feet_air_time = RewardTermCfg(
         func=mdp.feet_air_time,
-        weight=0.1,
+        weight=2.0,
         params={
             "sensor_cfg": SceneEntityCfg("contact_forces", body_names=".*_foot"),
             "command_name": "base_velocity",
@@ -426,7 +429,7 @@ class TerminationsCfg:
         },
     )
     bad_orientation = TerminationTermCfg(
-        func=mdp.bad_orientation, params={"limit_angle": 0.8}
+        func=mdp.bad_orientation, params={"limit_angle": 10}
     )
 
 
@@ -477,7 +480,6 @@ class RobotEnvCfg(ManagerBasedRLEnvCfg):
 class RobotPlayEnvCfg(RobotEnvCfg):
     def __post_init__(self):
         super().__post_init__()
-        self.scene.num_envs = 32
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
         self.commands.base_velocity.ranges = self.commands.base_velocity.limit_ranges
