@@ -1,47 +1,7 @@
-from dataclasses import MISSING
-
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import DelayedPDActuator, DelayedPDActuatorCfg
+from isaaclab.actuators import DelayedPDActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
-
-
-@configclass
-class Cyberdog2ActuatorCfg(DelayedPDActuatorCfg):
-    """
-    Configuration for actuators.
-    """
-
-    class_type: type = DelayedPDActuator
-
-    X1: float = 1e9
-    """Maximum Speed at Full Torque(T-N Curve Knee Point) Unit: rad/s"""
-
-    X2: float = 1e9
-    """No-Load Speed Test Unit: rad/s"""
-
-    Y1: float = MISSING
-    """Peak Torque Test(Torque and Speed in the Same Direction) Unit: N*m"""
-
-    Y2: float | None = None
-    """Peak Torque Test(Torque and Speed in the Opposite Direction) Unit: N*m"""
-
-    Fs: float = 0.0
-    """ Static friction coefficient """
-
-    Fd: float = 0.0
-    """ Dynamic friction coefficient """
-
-    Va: float = 0.01
-    """ Velocity at which the friction is fully activated """
-
-
-@configclass
-class Cyberdog2ActuatorCfg_Cyberdog2HV(Cyberdog2ActuatorCfg):
-    X1 = 12.3
-    X2 = 27.0
-    Y1 = 20.0
-    Y2 = 23.0
 
 
 @configclass
@@ -75,7 +35,7 @@ CYBERDOG2_CFG = Cyberdog2ArticulationCfg(
         usd_path="/opt/zouyu-workspaces/zouyu/assets/cyberdog_robot/cyberdog2.usd",
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.32),
+        pos=(0.0, 0.0, 0.3),
         joint_pos={
             "FR_hip_joint": 0.0,
             "FR_thigh_joint": 0.66,
@@ -93,9 +53,22 @@ CYBERDOG2_CFG = Cyberdog2ArticulationCfg(
         joint_vel={".*": 0.0},
     ),
     actuators={
-        "CYBERDOG2HV": Cyberdog2ActuatorCfg_Cyberdog2HV(
-            joint_names_expr=[".*"],
-            stiffness=25.0,
+        "CYBERDOG2HV": DelayedPDActuatorCfg(
+            joint_names_expr=[
+                "FR_hip_joint",
+                "FR_thigh_joint",
+                "FR_calf_joint",
+                "FL_hip_joint",
+                "FL_thigh_joint",
+                "FL_calf_joint",
+                "RR_hip_joint",
+                "RR_thigh_joint",
+                "RR_calf_joint",
+                "RL_hip_joint",
+                "RL_thigh_joint",
+                "RL_calf_joint",
+            ],
+            stiffness=20.0,
             damping=0.5,
             friction=0.01,
         ),
