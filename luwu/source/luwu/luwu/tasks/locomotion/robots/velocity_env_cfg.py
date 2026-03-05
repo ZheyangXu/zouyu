@@ -22,6 +22,9 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg
 from luwu.assets.robots.cyberdog2 import CYBERDOG2_CFG as ROBOT_CFG
 from luwu.tasks.locomotion import mdp
 
+from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort: skip
+
+
 COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
     size=(8.0, 8.0),
     border_width=20.0,
@@ -34,34 +37,43 @@ COBBLESTONE_ROAD_CFG = terrain_gen.TerrainGeneratorCfg(
     use_cache=False,
     sub_terrains={
         "flat": terrain_gen.MeshPlaneTerrainCfg(proportion=0.1),
-        # "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
-        #     proportion=0.1, noise_range=(0.01, 0.06), noise_step=0.01, border_width=0.25
-        # ),
-        # "hf_pyramid_slope": terrain_gen.HfPyramidSlopedTerrainCfg(
-        #     proportion=0.1, slope_range=(0.0, 0.4), platform_width=2.0, border_width=0.25
-        # ),
-        # "hf_pyramid_slope_inv": terrain_gen.HfInvertedPyramidSlopedTerrainCfg(
-        #     proportion=0.1, slope_range=(0.0, 0.4), platform_width=2.0, border_width=0.25
-        # ),
-        # "boxes": terrain_gen.MeshRandomGridTerrainCfg(
-        #     proportion=0.2, grid_width=0.45, grid_height_range=(0.05, 0.2), platform_width=2.0
-        # ),
-        # "pyramid_stairs": terrain_gen.MeshPyramidStairsTerrainCfg(
-        #     proportion=0.2,
-        #     step_height_range=(0.05, 0.23),
-        #     step_width=0.3,
-        #     platform_width=3.0,
-        #     border_width=1.0,
-        #     holes=False,
-        # ),
-        # "pyramid_stairs_inv": terrain_gen.MeshInvertedPyramidStairsTerrainCfg(
-        #     proportion=0.2,
-        #     step_height_range=(0.05, 0.23),
-        #     step_width=0.3,
-        #     platform_width=3.0,
-        #     border_width=1.0,
-        #     holes=False,
-        # ),
+        "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
+            proportion=0.1, noise_range=(0.01, 0.06), noise_step=0.01, border_width=0.25
+        ),
+        "hf_pyramid_slope": terrain_gen.HfPyramidSlopedTerrainCfg(
+            proportion=0.1,
+            slope_range=(0.0, 0.4),
+            platform_width=2.0,
+            border_width=0.25,
+        ),
+        "hf_pyramid_slope_inv": terrain_gen.HfInvertedPyramidSlopedTerrainCfg(
+            proportion=0.1,
+            slope_range=(0.0, 0.4),
+            platform_width=2.0,
+            border_width=0.25,
+        ),
+        "boxes": terrain_gen.MeshRandomGridTerrainCfg(
+            proportion=0.2,
+            grid_width=0.45,
+            grid_height_range=(0.05, 0.2),
+            platform_width=2.0,
+        ),
+        "pyramid_stairs": terrain_gen.MeshPyramidStairsTerrainCfg(
+            proportion=0.2,
+            step_height_range=(0.05, 0.23),
+            step_width=0.3,
+            platform_width=3.0,
+            border_width=1.0,
+            holes=False,
+        ),
+        "pyramid_stairs_inv": terrain_gen.MeshInvertedPyramidStairsTerrainCfg(
+            proportion=0.2,
+            step_height_range=(0.05, 0.23),
+            step_width=0.3,
+            platform_width=3.0,
+            border_width=1.0,
+            holes=False,
+        ),
     },
 )
 
@@ -74,8 +86,8 @@ class RobotSceneCfg(InteractiveSceneCfg):
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
         terrain_type="generator",
-        terrain_generator=COBBLESTONE_ROAD_CFG,
-        max_init_terrain_level=1,
+        terrain_generator=ROUGH_TERRAINS_CFG,
+        max_init_terrain_level=5,
         collision_group=-1,
         physics_material=sim_utils.RigidBodyMaterialCfg(
             friction_combine_mode="multiply",
@@ -124,9 +136,9 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-            "static_friction_range": (0.3, 0.8),
-            "dynamic_friction_range": (0.3, 0.8),
-            "restitution_range": (0.0, 0.4),
+            "static_friction_range": (0.8, 0.8),
+            "dynamic_friction_range": (0.6, 0.6),
+            "restitution_range": (0.0, 0.0),
             "num_buckets": 64,
         },
     )
@@ -136,9 +148,17 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names="base"),
-            "mass_distribution_params": (-0.3, 0.3),
+            "mass_distribution_params": (-5.0, 5.0),
             "operation": "add",
-            "recompute_inertia": True,
+        },
+    )
+
+    base_com = EventTermCfg(
+        func=mdp.randomize_rigid_body_com,
+        mode="startup",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", body_names="base"),
+            "com_range": {"x": (-0.05, 0.05), "y": (-0.05, 0.05), "z": (-0.01, 0.01)},
         },
     )
 
@@ -163,12 +183,12 @@ class EventCfg:
                 "yaw": (-3.14, 3.14),
             },
             "velocity_range": {
-                "x": (0.0, 0.0),
-                "y": (0.0, 0.0),
-                "z": (0.0, 0.0),
-                "roll": (0.0, 0.0),
-                "pitch": (0.0, 0.0),
-                "yaw": (0.0, 0.0),
+                "x": (-0.5, 0.5),
+                "y": (-0.5, 0.5),
+                "z": (-0.5, 0.5),
+                "roll": (-0.5, 0.5),
+                "pitch": (-0.5, 0.5),
+                "yaw": (-0.5, 0.5),
             },
         },
     )
@@ -176,14 +196,14 @@ class EventCfg:
     reset_robot_joints = EventTermCfg(
         func=mdp.reset_joints_by_scale,
         mode="reset",
-        params={"position_range": (1.0, 1.0), "velocity_range": (-1.0, 1.0)},
+        params={"position_range": (0.5, 1.5), "velocity_range": (0.0, 0.0)},
     )
 
     # interval
     push_robot = EventTermCfg(
         func=mdp.push_by_setting_velocity,
         mode="interval",
-        interval_range_s=(5.0, 10.0),
+        interval_range_s=(10.0, 15.0),
         params={
             "velocity_range": {
                 "x": (-0.5, 0.5),
@@ -200,13 +220,16 @@ class CommandsCfg:
     base_velocity = mdp.UniformLevelVelocityCommandCfg(
         asset_name="robot",
         resampling_time_range=(10.0, 10.0),
-        rel_standing_envs=0.1,
+        rel_standing_envs=0.02,
+        rel_heading_envs=1.0,
+        heading_command=False,
+        heading_control_stiffness=0.5,
         debug_vis=True,
-        ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
+        ranges=mdp.UniformVelocityCommandCfg.Ranges(
             lin_vel_x=(-1.0, 1.0),
-            lin_vel_y=(-0.5, 0.5),
-            ang_vel_z=(-0.5, 0.5),
-            heading=(-3.14, 3.14),
+            lin_vel_y=(-1.0, 1.0),
+            ang_vel_z=(-1.0, 1.0),
+            heading=(-math.pi, math.pi),
         ),
         limit_ranges=mdp.UniformLevelVelocityCommandCfg.Ranges(
             lin_vel_x=(-1.0, 1.0), lin_vel_y=(-0.4, 0.4), ang_vel_z=(-1.0, 1.0)
@@ -248,6 +271,9 @@ class ObservationsCfg:
     class PolicyCfg(ObservationGroupCfg):
         """Observations for policy group."""
 
+        base_lin_vel = ObservationTermCfg(
+            func=mdp.base_lin_vel, noise=AdditiveUniformNoiseCfg(n_min=-0.1, n_max=0.1)
+        )
         base_ang_vel = ObservationTermCfg(
             func=mdp.base_ang_vel,
             scale=0.2,
@@ -428,9 +454,9 @@ class TerminationsCfg:
             "threshold": 1.0,
         },
     )
-    bad_orientation = TerminationTermCfg(
-        func=mdp.bad_orientation, params={"limit_angle": 10}
-    )
+    # bad_orientation = TerminationTermCfg(
+    #     func=mdp.bad_orientation, params={"limit_angle": 10}
+    # )
 
 
 @configclass
@@ -438,7 +464,7 @@ class CurriculumCfg:
     """Curriculum terms for the MDP."""
 
     terrain_levels = CurriculumTermCfg(func=mdp.terrain_levels_vel)
-    lin_vel_cmd_levels = CurriculumTermCfg(func=mdp.lin_vel_cmd_levels)
+    # lin_vel_cmd_levels = CurriculumTermCfg(func=mdp.lin_vel_cmd_levels)
 
 
 @configclass
@@ -465,9 +491,18 @@ class RobotEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.physics_material = self.scene.terrain.physics_material
         self.sim.physx.gpu_max_rigid_patch_count = 10 * 2**15
 
-        self.scene.contact_forces.update_period = self.sim.dt
-        self.scene.height_scanner.update_period = self.sim.dt * self.decimation
+        # self.scene.contact_forces.update_period = self.sim.dt
+        # self.scene.height_scanner.update_period = self.sim.dt * self.decimation
 
+        # update sensor update periods
+        # we tick all the sensors based on the smallest update period (physics update period)
+        if self.scene.height_scanner is not None:
+            self.scene.height_scanner.update_period = self.decimation * self.sim.dt
+        if self.scene.contact_forces is not None:
+            self.scene.contact_forces.update_period = self.sim.dt
+
+        # check if terrain levels curriculum is enabled - if so, enable curriculum for terrain generator
+        # this generates terrains with increasing difficulty and is useful for training
         if getattr(self.curriculum, "terrain_levels", None) is not None:
             if self.scene.terrain.terrain_generator is not None:
                 self.scene.terrain.terrain_generator.curriculum = True
@@ -483,3 +518,83 @@ class RobotPlayEnvCfg(RobotEnvCfg):
         self.scene.terrain.terrain_generator.num_rows = 2
         self.scene.terrain.terrain_generator.num_cols = 1
         self.commands.base_velocity.ranges = self.commands.base_velocity.limit_ranges
+
+
+@configclass
+class RobotRoughEnvCfg(RobotEnvCfg):
+
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        self.scene.robot = ROBOT_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/base"
+        # scale down the terrains because the robot is small
+        self.scene.terrain.terrain_generator.sub_terrains["boxes"].grid_height_range = (
+            0.025,
+            0.1,
+        )
+        self.scene.terrain.terrain_generator.sub_terrains[
+            "random_rough"
+        ].noise_range = (0.01, 0.06)
+        self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_step = (
+            0.01
+        )
+
+        # reduce action scale
+        self.actions.JointPositionAction.scale = 0.25
+
+        # event
+        self.events.push_robot = None
+        self.events.add_base_mass.params["mass_distribution_params"] = (-1.0, 3.0)
+        self.events.add_base_mass.params["asset_cfg"].body_names = "base"
+        self.events.body_external_force_torque.params["asset_cfg"].body_names = "base"
+        self.events.reset_robot_joints.params["position_range"] = (1.0, 1.0)
+        self.events.reset_base.params = {
+            "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
+            "velocity_range": {
+                "x": (0.0, 0.0),
+                "y": (0.0, 0.0),
+                "z": (0.0, 0.0),
+                "roll": (0.0, 0.0),
+                "pitch": (0.0, 0.0),
+                "yaw": (0.0, 0.0),
+            },
+        }
+        self.events.base_com = None
+
+        # rewards
+        self.rewards.feet_air_time.params["sensor_cfg"].body_names = ".*_foot"
+        self.rewards.feet_air_time.weight = 0.01
+        self.rewards.undesired_contacts = None
+        self.rewards.dof_pos_limits.weight = -0.0002
+        self.rewards.track_lin_vel_xy.weight = 1.5
+        self.rewards.track_ang_vel_z.weight = 0.75
+        # self.rewards.dof_acc_l2.weight = -2.5e-7
+
+        # terminations
+        self.terminations.base_contact.params["sensor_cfg"].body_names = "base"
+
+
+@configclass
+class RobotRoughPlayEnvCfg(RobotRoughEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        # make a smaller scene for play
+        self.scene.num_envs = 2
+        self.scene.env_spacing = 2.5
+        # spawn the robot randomly in the grid (instead of their terrain levels)
+        self.scene.terrain.max_init_terrain_level = None
+        # reduce the number of terrains to save memory
+        if self.scene.terrain.terrain_generator is not None:
+            self.scene.terrain.terrain_generator.num_rows = 5
+            self.scene.terrain.terrain_generator.num_cols = 5
+            self.scene.terrain.terrain_generator.curriculum = False
+
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
+        # remove random pushing event
+        self.events.base_external_force_torque = None
+        self.events.push_robot = None
