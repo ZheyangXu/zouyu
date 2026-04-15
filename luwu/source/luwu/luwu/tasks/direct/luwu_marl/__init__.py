@@ -13,7 +13,7 @@ from . import agents
 
 
 gym.register(
-    id="Luwu-Marl-Direct-v0",
+    id="Template-Luwu-Marl-Direct-v0",
     entry_point=f"{__name__}.luwu_marl_env:LuwuMarlEnv",
     disable_env_checker=True,
     kwargs={
