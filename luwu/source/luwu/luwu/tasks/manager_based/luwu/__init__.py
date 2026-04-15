@@ -13,7 +13,7 @@ from . import agents
 
 
 gym.register(
-    id="Luwu-v0",
+    id="Template-Luwu-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={

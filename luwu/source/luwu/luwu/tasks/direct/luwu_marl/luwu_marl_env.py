@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 import math
+import torch
 from collections.abc import Sequence
 
 import isaaclab.sim as sim_utils
-import torch
 from isaaclab.assets import Articulation
 from isaaclab.envs import DirectMARLEnv
 from isaaclab.sim.spawners.from_files import GroundPlaneCfg, spawn_ground_plane
@@ -51,21 +51,15 @@ class LuwuMarlEnv(DirectMARLEnv):
 
     def _apply_action(self) -> None:
         self.robot.set_joint_effort_target(
-            self.actions["cart"] * self.cfg.cart_action_scale,
-            joint_ids=self._cart_dof_idx,
+            self.actions["cart"] * self.cfg.cart_action_scale, joint_ids=self._cart_dof_idx
         )
         self.robot.set_joint_effort_target(
-            self.actions["pendulum"] * self.cfg.pendulum_action_scale,
-            joint_ids=self._pendulum_dof_idx,
+            self.actions["pendulum"] * self.cfg.pendulum_action_scale, joint_ids=self._pendulum_dof_idx
         )
 
     def _get_observations(self) -> dict[str, torch.Tensor]:
-        pole_joint_pos = normalize_angle(
-            self.joint_pos[:, self._pole_dof_idx[0]].unsqueeze(dim=1)
-        )
-        pendulum_joint_pos = normalize_angle(
-            self.joint_pos[:, self._pendulum_dof_idx[0]].unsqueeze(dim=1)
-        )
+        pole_joint_pos = normalize_angle(self.joint_pos[:, self._pole_dof_idx[0]].unsqueeze(dim=1))
+        pendulum_joint_pos = normalize_angle(self.joint_pos[:, self._pendulum_dof_idx[0]].unsqueeze(dim=1))
         observations = {
             "cart": torch.cat(
                 (
@@ -112,13 +106,8 @@ class LuwuMarlEnv(DirectMARLEnv):
         self.joint_vel = self.robot.data.joint_vel
 
         time_out = self.episode_length_buf >= self.max_episode_length - 1
-        out_of_bounds = torch.any(
-            torch.abs(self.joint_pos[:, self._cart_dof_idx]) > self.cfg.max_cart_pos,
-            dim=1,
-        )
-        out_of_bounds = out_of_bounds | torch.any(
-            torch.abs(self.joint_pos[:, self._pole_dof_idx]) > math.pi / 2, dim=1
-        )
+        out_of_bounds = torch.any(torch.abs(self.joint_pos[:, self._cart_dof_idx]) > self.cfg.max_cart_pos, dim=1)
+        out_of_bounds = out_of_bounds | torch.any(torch.abs(self.joint_pos[:, self._pole_dof_idx]) > math.pi / 2, dim=1)
 
         terminated = {agent: out_of_bounds for agent in self.cfg.possible_agents}
         time_outs = {agent: time_out for agent in self.cfg.possible_agents}
@@ -180,28 +169,16 @@ def compute_rewards(
 ):
     rew_alive = rew_scale_alive * (1.0 - reset_terminated.float())
     rew_termination = rew_scale_terminated * reset_terminated.float()
-    rew_pole_pos = rew_scale_pole_pos * torch.sum(
-        torch.square(pole_pos).unsqueeze(dim=1), dim=-1
-    )
+    rew_pole_pos = rew_scale_pole_pos * torch.sum(torch.square(pole_pos).unsqueeze(dim=1), dim=-1)
     rew_pendulum_pos = rew_scale_pendulum_pos * torch.sum(
         torch.square(pole_pos + pendulum_pos).unsqueeze(dim=1), dim=-1
     )
-    rew_cart_vel = rew_scale_cart_vel * torch.sum(
-        torch.abs(cart_vel).unsqueeze(dim=1), dim=-1
-    )
-    rew_pole_vel = rew_scale_pole_vel * torch.sum(
-        torch.abs(pole_vel).unsqueeze(dim=1), dim=-1
-    )
-    rew_pendulum_vel = rew_scale_pendulum_vel * torch.sum(
-        torch.abs(pendulum_vel).unsqueeze(dim=1), dim=-1
-    )
+    rew_cart_vel = rew_scale_cart_vel * torch.sum(torch.abs(cart_vel).unsqueeze(dim=1), dim=-1)
+    rew_pole_vel = rew_scale_pole_vel * torch.sum(torch.abs(pole_vel).unsqueeze(dim=1), dim=-1)
+    rew_pendulum_vel = rew_scale_pendulum_vel * torch.sum(torch.abs(pendulum_vel).unsqueeze(dim=1), dim=-1)
 
     total_reward = {
-        "cart": rew_alive
-        + rew_termination
-        + rew_pole_pos
-        + rew_cart_vel
-        + rew_pole_vel,
+        "cart": rew_alive + rew_termination + rew_pole_pos + rew_cart_vel + rew_pole_vel,
         "pendulum": rew_alive + rew_termination + rew_pendulum_pos + rew_pendulum_vel,
     }
     return total_reward

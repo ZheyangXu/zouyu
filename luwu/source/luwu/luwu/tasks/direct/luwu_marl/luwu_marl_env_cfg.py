@@ -3,12 +3,13 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+from isaaclab_assets.robots.cart_double_pendulum import CART_DOUBLE_PENDULUM_CFG
+
 from isaaclab.assets import ArticulationCfg
 from isaaclab.envs import DirectMARLEnvCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.utils import configclass
-from isaaclab_assets.robots.cart_double_pendulum import CART_DOUBLE_PENDULUM_CFG
 
 
 @configclass
@@ -26,14 +27,10 @@ class LuwuMarlEnvCfg(DirectMARLEnvCfg):
     sim: SimulationCfg = SimulationCfg(dt=1 / 120, render_interval=decimation)
 
     # robot(s)
-    robot_cfg: ArticulationCfg = CART_DOUBLE_PENDULUM_CFG.replace(
-        prim_path="/World/envs/env_.*/Robot"
-    )
+    robot_cfg: ArticulationCfg = CART_DOUBLE_PENDULUM_CFG.replace(prim_path="/World/envs/env_.*/Robot")
 
     # scene
-    scene: InteractiveSceneCfg = InteractiveSceneCfg(
-        num_envs=4096, env_spacing=4.0, replicate_physics=True
-    )
+    scene: InteractiveSceneCfg = InteractiveSceneCfg(num_envs=4096, env_spacing=4.0, replicate_physics=True)
 
     # custom parameters/scales
     # - controllable joint
@@ -53,9 +50,6 @@ class LuwuMarlEnvCfg(DirectMARLEnvCfg):
     rew_scale_pendulum_pos = -1.0
     rew_scale_pendulum_vel = -0.01
     # - reset states/conditions
-    initial_pendulum_angle_range = [
-        -0.25,
-        0.25,
-    ]  # pendulum angle sample range on reset [rad]
+    initial_pendulum_angle_range = [-0.25, 0.25]  # pendulum angle sample range on reset [rad]
     initial_pole_angle_range = [-0.25, 0.25]  # pole angle sample range on reset [rad]
     max_cart_pos = 3.0  # reset if cart exceeds this position [m]
