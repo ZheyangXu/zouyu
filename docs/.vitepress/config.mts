@@ -14,7 +14,12 @@ export default defineConfig({
       },
       {
         text: "Projects",
-        link: "/projects/",
+        items: [
+          {
+            text: "MPC",
+            link: "/projects/mpc/",
+          },
+        ],
       },
       {
         text: "机器人学",
