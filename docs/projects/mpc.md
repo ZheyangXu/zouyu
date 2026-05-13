@@ -21,7 +21,7 @@
 
 ## 四足机器人运动控制的凸MPC
 
-控制器基于[[Di Carlo et al., 2018]](convex-mpc-v2.md)提出的凸MPC框架，该框架最初在MIT Cheetah 3上验证。
+控制器基于[[Di Carlo et al., 2018]](https://dspace.mit.edu/bitstream/handle/1721.1/138000/convex_mpc_2fix.pdf)提出的凸MPC框架，该框架最初在MIT Cheetah 3上验证。
 
 ### 简化动力学
 
