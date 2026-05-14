@@ -16,8 +16,16 @@ export default defineConfig({
         text: "Projects",
         items: [
           {
+            text: "陆吾",
+            link: "/projects/luwu/",
+          },
+          {
             text: "MPC",
             link: "/projects/mpc/",
+          },
+          {
+            text: "人形机器人",
+            link: "/projects/humanoid/",
           },
         ],
       },
@@ -271,6 +279,20 @@ export default defineConfig({
               ],
             },
           ],
+        },
+      ],
+      "/projects/humanoid/": [
+        {
+          text: "人形机器人",
+          link: "/projects/humanoid/index",
+        },
+        {
+          text: "机器人定位与建图",
+          link: "/projects/humanoid/localization",
+        },
+        {
+          text: "人形机器人运动控制",
+          link: "/projects/humanoid/locomotion",
         },
       ],
     },
