@@ -291,6 +291,10 @@ export default defineConfig({
           link: "/projects/humanoid/localization",
         },
         {
+          text: "机器人路径规划和避障",
+          link: "/projects/humanoid/path_planning",
+        },
+        {
           text: "人形机器人运动控制",
           link: "/projects/humanoid/locomotion",
         },
