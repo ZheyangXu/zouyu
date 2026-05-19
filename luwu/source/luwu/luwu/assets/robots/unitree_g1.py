@@ -1,5 +1,7 @@
 """Configuration for the Unitree G1 29-DOF humanoid robot."""
 
+from typing import MISSING
+
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
@@ -7,11 +9,11 @@ from isaaclab.utils import configclass
 
 from luwu.assets.robots import LUWU_ROOT_DIR
 
+USD_PATH = MISSING
+
 UNITREE_G1_29DOF_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=(
-            "/opt/zouyu-workspaces/amp/legged_lab/source/legged_lab/legged_lab/data/Robots/Unitree/g1_29dof/usd/g1_29dof_rev_1_0/g1_29dof_rev_1_0.usd"
-        ),
+        usd_path=USD_PATH,
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -102,4 +104,3 @@ UNITREE_G1_29DOF_CFG = ArticulationCfg(
         ),
     },
 )
-"""Unitree G1 29-DOF humanoid robot configuration."""

@@ -1,7 +1,7 @@
 """G1-specific AMP locomotion environment configuration."""
 
 import math
-import os
+from typing import MISSING
 
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg
@@ -22,15 +22,6 @@ KEY_BODY_NAMES = [
     "left_shoulder_roll_link",
     "right_shoulder_roll_link",
 ]
-
-AMP_NUM_STEPS = 4
-
-# Motion dataset path (walk_and_run)
-_MOTION_DATA_DIR = (
-    "/opt/zouyu-workspaces/amp/legged_lab/source/legged_lab/legged_lab/"
-    "data/MotionData/g1_29dof/amp/walk_and_run"
-)
-
 
 @configclass
 class G1AmpRewards:

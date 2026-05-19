@@ -1,47 +1,45 @@
 """RSL-RL AMP training configuration for G1."""
 
+from typing import MISSING
+
 from isaaclab.utils import configclass
 from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg
 
-
+DATA_PATH = MISSING
 @configclass
 class RslRlAmpDiscriminatorCfg:
     """Configuration for the AMP discriminator network."""
 
     hidden_dims: list[int] = [1024, 512]
-    """Hidden dimensions of the discriminator MLP."""
 
     activation: str = "elu"
-    """Activation function for the discriminator."""
 
     style_reward_scale: float = 5.0
-    """Scale factor for the style reward."""
 
     task_style_lerp: float = 0.4
-    """Linear interpolation factor for task vs style reward."""
 
 
 @configclass
 class RslRlAmpCfg:
     """Configuration for AMP training components."""
 
+    # Size of the replay buffer (in number of transitions).
     disc_obs_buffer_size: int = 100
-    """Size of the replay buffer (in number of transitions)."""
 
+    # Gradient penalty coefficient (lambda in the paper).
     grad_penalty_scale: float = 10.0
-    """Gradient penalty coefficient (lambda in the paper)."""
 
+    # Discriminator loss type: 'LSGAN', 'BCEWithLogits', or 'Wasserstein'.
     loss_type: str = "LSGAN"
-    """Discriminator loss type: 'LSGAN', 'BCEWithLogits', or 'Wasserstein'."""
 
+    # Discriminator network configuration.
     amp_discriminator: RslRlAmpDiscriminatorCfg = RslRlAmpDiscriminatorCfg()
-    """Discriminator network configuration."""
 
+    # Dataset configuration (amp_data_path, datasets, slow_down_factor).
     dataset: dict | None = None
-    """Dataset configuration (amp_data_path, datasets, slow_down_factor)."""
 
+    # Whether to use empirical normalization for AMP observations.
     empirical_normalization: bool = False
-    """Whether to use empirical normalization for AMP observations."""
 
 
 @configclass
@@ -49,7 +47,6 @@ class RslRlPpoAmpAlgorithmCfg:
     """Configuration for the AMP+PPO algorithm."""
 
     class_name: str = "AmpPPO"
-    """Algorithm class name for resolution."""
 
     clip_param: float = 0.2
     num_learning_epochs: int = 5
@@ -65,7 +62,6 @@ class RslRlPpoAmpAlgorithmCfg:
     lam: float = 0.95
 
     amp_cfg: RslRlAmpCfg = RslRlAmpCfg()
-    """AMP-specific configuration."""
 
 
 @configclass
@@ -120,8 +116,7 @@ class G1RslRlOnPolicyRunnerAmpCfg(RslRlOnPolicyRunnerCfg):
             empirical_normalization=False,
             dataset={
                 "amp_data_path": (
-                    "/opt/zouyu-workspaces/amp/legged_lab/source/legged_lab/"
-                    "legged_lab/data/MotionData/g1_29dof/amp/walk_and_run"
+                    DATA_PATH
                 ),
                 "datasets": {
                     "B10_-__Walk_turn_left_45_stageii": 1.0,

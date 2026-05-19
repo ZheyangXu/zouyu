@@ -174,13 +174,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
 
     # Create the appropriate runner based on class_name
-    runner_class_name = agent_cfg.class_name
-    if runner_class_name == "AmpOnPolicyRunner":
-        runner = AmpOnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
-    elif runner_class_name == "OnPolicyRunner":
-        runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
-    else:
-        raise ValueError(f"Unsupported runner class: {runner_class_name}")
+    print(f"[INFO] Using runner class: {agent_cfg.class_name}")
+    runner = AmpOnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+
 
     runner.add_git_repo_to_log(__file__)
 

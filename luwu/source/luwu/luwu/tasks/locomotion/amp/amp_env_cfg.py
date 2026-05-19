@@ -22,7 +22,6 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 import luwu.tasks.locomotion.amp.mdp as mdp
 
-
 # ------------------------------------------------------------------
 # Scene
 # ------------------------------------------------------------------

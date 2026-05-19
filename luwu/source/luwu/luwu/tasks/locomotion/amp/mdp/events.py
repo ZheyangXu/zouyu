@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 
 import torch
 from isaaclab.managers import SceneEntityCfg
@@ -14,9 +13,7 @@ from isaaclab.envs.mdp import (
     apply_external_force_torque,
     push_by_setting_velocity,
 )
-
-if TYPE_CHECKING:
-    from isaaclab.envs import ManagerBasedEnv
+from isaaclab.envs import ManagerBasedEnv
 
 
 def reset_from_ref(
