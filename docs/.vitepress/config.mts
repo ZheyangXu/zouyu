@@ -20,6 +20,10 @@ export default defineConfig({
             link: "/projects/luwu/",
           },
           {
+            text: "陆吾-AMP",
+            link: "/projects/amp/",
+          },
+          {
             text: "MPC",
             link: "/projects/mpc/",
           },
