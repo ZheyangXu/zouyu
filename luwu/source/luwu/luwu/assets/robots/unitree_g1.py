@@ -1,13 +1,11 @@
 """Configuration for the Unitree G1 29-DOF humanoid robot."""
 
-from typing import MISSING
+from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils import configclass
-
-from luwu.assets.robots import LUWU_ROOT_DIR
 
 USD_PATH = MISSING
 

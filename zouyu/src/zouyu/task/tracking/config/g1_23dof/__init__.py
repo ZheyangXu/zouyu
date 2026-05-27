@@ -1,0 +1,28 @@
+from mjlab.tasks.registry import register_mjlab_task
+
+from zouyu.task.tracking.config.g1_23dof.env_cfgs import (
+    zouyu_g1_23dof_flat_tracking_env_cfg,
+)
+from zouyu.task.tracking.config.g1_23dof.rl_cfg import (
+    zouyu_g1_23dof_tracking_ppo_runner_cfg,
+)
+from zouyu.task.tracking.rl import MotionTrackingOnPolicyRunner
+
+register_mjlab_task(
+    task_id="Zouyu-G1-23Dof-Tracking",
+    env_cfg=zouyu_g1_23dof_flat_tracking_env_cfg(),
+    play_env_cfg=zouyu_g1_23dof_flat_tracking_env_cfg(play=True),
+    rl_cfg=zouyu_g1_23dof_tracking_ppo_runner_cfg(),
+    runner_cls=MotionTrackingOnPolicyRunner,
+)
+
+
+register_mjlab_task(
+    task_id="Zouyu-G1-23Dof-Tracking-No-State-Estimation",
+    env_cfg=zouyu_g1_23dof_flat_tracking_env_cfg(has_state_estimation=False),
+    play_env_cfg=zouyu_g1_23dof_flat_tracking_env_cfg(
+        has_state_estimation=False, play=True
+    ),
+    rl_cfg=zouyu_g1_23dof_tracking_ppo_runner_cfg(),
+    runner_cls=MotionTrackingOnPolicyRunner,
+)
