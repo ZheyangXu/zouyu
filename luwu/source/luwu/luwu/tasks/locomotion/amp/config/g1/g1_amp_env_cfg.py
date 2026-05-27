@@ -1,7 +1,7 @@
 """G1-specific AMP locomotion environment configuration."""
 
 import math
-from typing import MISSING
+from dataclasses import MISSING
 
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg

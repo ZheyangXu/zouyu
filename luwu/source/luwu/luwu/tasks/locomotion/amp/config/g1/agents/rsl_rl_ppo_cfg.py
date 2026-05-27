@@ -1,6 +1,6 @@
 """RSL-RL AMP training configuration for G1."""
 
-from typing import MISSING
+from dataclasses import MISSING
 
 from isaaclab.utils import configclass
 from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg
