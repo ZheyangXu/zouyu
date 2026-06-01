@@ -34,7 +34,7 @@ export default defineConfig({
           {
             text: "运动跟踪",
             link: "/projects/tracking/",
-          }
+          },
         ],
       },
       {
