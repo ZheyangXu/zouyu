@@ -31,6 +31,10 @@ export default defineConfig({
             text: "人形机器人",
             link: "/projects/humanoid/",
           },
+          {
+            text: "运动跟踪",
+            link: "/projects/tracking/",
+          }
         ],
       },
       {
