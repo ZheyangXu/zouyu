@@ -138,7 +138,7 @@ def zouyu_cyberdog2_rough_env_cfg(
 
 
 def zouyu_cyberdog2_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
-    """Create Unitree Cyberdog2 flat terrain velocity configuration."""
+    """Create Cyberdog2 flat terrain velocity configuration."""
     cfg = zouyu_cyberdog2_rough_env_cfg(play=play)
 
     cfg.sim.njmax = 300
