@@ -15,7 +15,9 @@ from zouyu.assets.robots.utils import update_assets
 ##
 SRC_PATH = Path("/opt/zouyu-workspaces/zouyu/zouyu/src/zouyu")
 
-CYBERDOG2_XML: Path = SRC_PATH / "assets" / "robots" / "cyberdog2" / "xmls" / "cyberdog2.xml"
+CYBERDOG2_XML: Path = (
+    SRC_PATH / "assets" / "robots" / "cyberdog2" / "xmls" / "cyberdog2.xml"
+)
 assert CYBERDOG2_XML.exists()
 
 
@@ -30,11 +32,6 @@ def get_spec() -> mujoco.MjSpec:
     spec.assets = get_assets(spec.meshdir)
     return spec
 
-
-##
-# Actuator config (URDF: effort=12.0, damping=0.01, friction=0.1,
-# reduction=7.75).
-##
 
 CYBERDOG2_ACTUATOR_HIP = BuiltinPositionActuatorCfg(
     target_names_expr=(".*hip_joint",),
@@ -58,10 +55,6 @@ CYBERDOG2_ACTUATOR_CALF = BuiltinPositionActuatorCfg(
     armature=0.02,
 )
 
-##
-# Keyframes.
-##
-
 
 INIT_STATE = EntityCfg.InitialStateCfg(
     pos=(0.0, 0.0, 0.32),
@@ -73,9 +66,6 @@ INIT_STATE = EntityCfg.InitialStateCfg(
     joint_vel={".*": 0.0},
 )
 
-##
-# Collision config.
-##
 
 _foot_regex = r"^[FR][LR]_foot_collision$"
 
@@ -101,10 +91,6 @@ FULL_COLLISION = CollisionCfg(
     contype=1,
     conaffinity=0,
 )
-
-##
-# Final config.
-##
 
 CYBERDOG2_ARTICULATION = EntityArticulationInfoCfg(
     actuators=(
