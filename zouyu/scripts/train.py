@@ -198,7 +198,7 @@ def main():
     # Import tasks to populate the registry.
     import mjlab.tasks  # noqa: F401
 
-    import zouyu.task
+    import zouyu.tasks
 
     all_tasks = list_tasks()
     chosen_task, remaining_args = tyro.cli(

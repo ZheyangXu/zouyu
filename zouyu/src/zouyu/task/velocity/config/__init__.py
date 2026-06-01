@@ -1,1 +1,0 @@
-from zouyu.task.velocity.config import go2
