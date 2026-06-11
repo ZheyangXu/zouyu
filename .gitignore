@@ -214,3 +214,7 @@ _build
 # Teleop Recorded Dataset
 /datasets/
 logs
+
+# Claude
+.claude
+CLAUDE.md
