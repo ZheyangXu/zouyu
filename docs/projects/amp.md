@@ -1,5 +1,7 @@
 # AMP
 
+<video width="1080" controls src="..//public/projects/luwu/amp-demo.mp4"></video>
+
 AMP（Adversarial Motion Priors，对抗性运动先验）是一种基于 GAN 和强化学习RL的运动控制框架，核心是通过对抗模仿从非结构化运动数据中学习风格特征，让物理模拟角色或真实机器人在完成任务的同时，呈现自然、风格化的运动。
 
 传统运动控制方法存在两大痛点，一个是手动设计负担重，需精心设计模仿目标（如轨迹跟踪误差）和动作选择机制，难以适配大规模非结构化运动数据。另一个则是运动自然度不足，纯 RL 仅关注任务完成度，生成的运动机械僵硬；传统模仿学习依赖固定轨迹，缺乏灵活性。AMP 本质是对抗学习和强化学习的融合框架，其创新在于无需手动设计模仿规则和动作选择器，用对抗性判别器学习运动数据的风格先验，用 RL 训练控制策略，最终实现任务目标（如导航、击球）和风格模仿（如人类行走、僵尸步态）的双重目标。
@@ -91,55 +93,224 @@ AMP 无传统 GAN 的生成器，而是以 **RL 策略网络**为**核心执行�
 * **梯度惩罚**：在判别器的损失函数中加入额外惩罚项，对真实运动样本的观察特征 $\phi(s, s')$ 计算梯度的 L2 范数，惩罚非零梯度，防止策略偏离真实运动分布。
 * **细粒度观察特征**：包含根节点动态（线性速度和角速度）、关节细节（局部旋转和局部速度）、端点特征（手、脚等的 3D 位置），完整覆盖整体-局部-端点的运动动态信息，让判别器能精准区分真实运动的自然动态与生成运动的机械动态。
 
-## RSL_RL 添加 AMP PPO 算法支持
+## 实验设置
 
-```shell
-.
-├── rsl_rl
-│   ├── algorithms
-│   │   ├── amp_ppo.py
-│   │   ├── distillation.py
-│   │   ├── __init__.py
-│   │   ├── ppo.py
-│   ├── env
-│   │   ├── __init__.py
-│   │   └── vec_env.py
-│   ├── extensions
-│   │   ├── __init__.py
-│   │   ├── rnd.py
-│   │   └── symmetry.py
-│   ├── __init__.py
-│   ├── models
-│   │   ├── cnn_model.py
-│   │   ├── __init__.py
-│   │   ├── mlp_model.py
-│   │   └── rnn_model.py
-│   ├── modules
-│   │   ├── cnn.py
-│   │   ├── discriminator.py
-│   │   ├── distribution.py
-│   │   ├── __init__.py
-│   │   ├── mlp.py
-│   │   ├── normalization.py
-│   │   └── rnn.py
-│   ├── runners
-│   │   ├── amp_on_policy_runner.py
-│   │   ├── distillation_runner.py
-│   │   ├── __init__.py
-│   │   ├── on_policy_runner.py
-│   ├── storage
-│   │   ├── __init__.py
-│   │   ├── replay_buffer.py
-│   │   └── rollout_storage.py
-│   └── utils
-│       ├── __init__.py
-│       ├── logger.py
-│       ├── motion_loader.py
-│       ├── neptune_utils.py
-│       ├── utils.py
-│       └── wandb_utils.py
-```
+### MDP
+
+### Observations
+
+Observations 分成三部分: actor, critic 和 discriminator 的输入，分别对应强化学习中的策略网络、价值网络和对抗判别器。
+
+1. Actor Observations
+
+| Name                    | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| base_ang_vel            | 机器人基座的角速度                           |
+| root_local_rot_tan_norm | 机器人根节点的局部旋转，使用 tanh 归一化表示 |
+| velocity_commands       | 机器人接收到的速度指令，包含线速度和角速度   |
+| joint_pos               | 机器人所有关节的当前角度位置                 |
+| joint_vel               | 机器人所有关节的当前角速度                   |
+
+2. Critic Observations
+
+| Name                    | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| base_lin_vel            | 机器人基座的线速度                           |
+| base_ang_vel            | 机器人基座的角速度                           |
+| root_local_rot_tan_norm | 机器人根节点的局部旋转，使用 tanh 归一化表示 |
+| velocity_commands       | 机器人接收到的速度指令，包含线速度和角速度   |
+| joint_pos               | 机器人所有关节的当前角度位置                 |
+| joint_vel               | 机器人所有关节的当前角速度                   |
+| actions                 | 机器人所有关节的动作指令                     |
+| key_body_pos_b          | 机器人关键身体部位（如手、脚等）的 3D 位置   |
+
+3. Discriminator Observations
+
+| Name         | Description                  |
+| ------------ | ---------------------------- |
+| base_ang_vel | 机器人基座的角速度           |
+| joint_pos    | 机器人所有关节的当前角度位置 |
+| joint_vel    | 机器人所有关节的当前角速度   |
+
+### Event
+
+| Stage    | Event Name                    | Description                                                                                      |
+| -------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| statrup  | randomize_rigid_body_material | 在仿真环境启动时，随机化机器人和地面的物理材质属性，如摩擦系数、弹性等，以增加训练的鲁棒性。     |
+| startup  | randomize_rigid_body_mass     | 在仿真环境启动时，随机化机器人各个部件的质量属性，以增加训练的鲁棒性。                           |
+| reset    | apply_external_force_torque   | 在环境重置时，向机器人施加随机的外部力或力矩，以增加训练的鲁棒性。                               |
+| reset    | reset_from_ref                | 在环境重置时，将机器人的状态随机初始化为运动数据集中的一个参考状态，以增加训练的多样性和稳定性。 |
+| interval | push_by_setting_velocity      | 在训练过程中，定期根据预设的速度指令向机器人施加推力，以引导其学习特定的运动模式。               |
+
+### Rewards
+
+| Name                 | Description                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| track_lin_vel_xy_exp | 线速度跟踪奖励，基于机器人在水平面上的线速度与目标速度的指数距离计算，鼓励机器人以正确的速度移动。                           |
+| track_ang_vel_z_exp  | 角速度跟踪奖励，基于机器人绕垂直轴的角速度与目标角速度的指数距离计算，鼓励机器人以正确的角速度旋转。                         |
+| lin_vel_z_l2         | 垂直线速度奖励，基于机器人在垂直方向上的线速度的 L2 范数计算，鼓励机器人保持适当的垂直运动。                                 |
+| ang_vel_xy_l2        | 水平角速度奖励，基于机器人绕水平轴的角速度的 L2 范数计算，鼓励机器人保持适当的水平旋转。                                     |
+| dof_torques_l2       | 关节力矩奖励，基于机器人所有关节的力矩指令的 L2 范数计算，鼓励机器人使用较小的力矩来完成任务。                               |
+| action_rate_l2       | 动作变化率奖励，基于机器人所有关节的动作指令与前一时间步的动作指令之间的 L2 范数计算，鼓励机器人动作平滑。                   |
+| feet_air_time        | 脚部空中时间奖励，基于机器人脚部离地的时间计算，鼓励机器人保持适当的步态和空中时间。                                         |
+| undesired_contacts   | 不期望接触奖励，基于机器人与环境中不期望接触的数量计算，鼓励机器人避免与环境中的障碍物或地面发生不必要的接触。               |
+| flat_orientation_l2  | 平坦姿态奖励，基于机器人根节点的局部旋转与水平姿态之间的 L2 范数计算，鼓励机器人保持平坦的姿态。                             |
+| dof_pos_limits       | 关节位置限制奖励，基于机器人所有关节的当前角度位置与预设的关节位置限制之间的 L2 范数计算，鼓励机器人保持在合理的关节范围内。 |
+
+### Terminations
+
+| Name            | Description                                                                      |
+| --------------- | -------------------------------------------------------------------------------- |
+| time_out        | 当训练环境中的时间步数达到预设的最大值时，训练回合结束。                         |
+| base_contact    | 当机器人基座与地面发生接触时，训练回合结束。                                     |
+| base_height     | 当机器人基座的高度低于预设的最小值时，训练回合结束。                             |
+| bad_orientation | 当机器人根节点的局部旋转与水平姿态之间的 L2 范数超过预设的阈值时，训练回合结束。 |
 
 ## AMP 训练
 
+### AMP 关键参数
+
+| 参数名称           | 值          | 备注                     |
+| ------------------ | ----------- | ------------------------ |
+| learning rate      | 0.0001      | -                        |
+| 判别器 hidden dims | [1024, 512] | MLP                      |
+| style reward scale | 5.0         | 风格奖励的权重           |
+| task style lerp    | 0.3         | 任务奖励和风格奖励的平衡 |
+| loss type          | LSGAN       | 最小二乘 GAN             |
+
+### 训练结果
+
 <video width="1080" controls src="..//public/projects/luwu/amp-demo.mp4"></video>
+
+#### 关键曲线
+
+![alt text](../public/projects/luwu/g1_amp_total_reward.png)
+
+![alt text](../public/projects/luwu/g1_amp_mean_reward.png)
+
+![alt text](../public/projects/luwu/g1_amp_mean_episode_length.png)
+
+![alt text](../public/projects/luwu/g1_amp_disc_loss.png)
+
+## 附录
+
+### Unitree G1 Joints
+
+| Index | Joint Name                  |
+| ----- | --------------------------- |
+| 0     | left_hip_pitch_joint        |
+| 1     | right_hip_pitch_joint       |
+| 2     | waist_yaw_joint             |
+| 3     | left_hip_roll_joint         |
+| 4     | right_hip_roll_joint        |
+| 5     | waist_roll_joint            |
+| 6     | left_hip_yaw_joint          |
+| 7     | right_hip_yaw_joint         |
+| 8     | waist_pitch_joint           |
+| 9     | left_knee_joint             |
+| 10    | right_knee_joint            |
+| 11    | left_shoulder_pitch_joint   |
+| 12    | right_shoulder_pitch_joint  |
+| 13    | left_ankle_pitch_joint      |
+| 14    | right_ankle_pitch_joint     |
+| 15    | left_shoulder_roll_joint    |
+| 16    | right_shoulder_roll_joint   |
+| 17    | left_ankle_roll_joint       |
+| 18    | right_ankle_roll_joint      |
+| 19    | left_shoulder_yaw_joint     |
+| 20    | right_shoulder_yaw_joint    |
+| 21    | left_elbow_joint            |
+| 22    | right_elbow_joint           |
+| 23    | left_wrist_roll_joint       |
+| 24    | right_wrist_roll_joint      |
+| 25    | left_wrist_pitch_joint      |
+| 26    | right_wrist_pitch_joint     |
+| 27    | left_wrist_yaw_joint        |
+| 28    | right_wrist_yaw_joint       |
+
+### Agent Config
+
+```yaml
+seed: 42
+device: cuda:0
+num_steps_per_env: 24
+max_iterations: 50000
+empirical_normalization: {}
+obs_groups:
+  policy:
+  - policy
+  critic:
+  - critic
+  discriminator:
+  - disc
+  discriminator_demonstration:
+  - disc_demo
+clip_actions: null
+check_for_nan: true
+save_interval: 200
+experiment_name: g1_amp
+run_name: ''
+logger: tensorboard
+neptune_project: isaaclab
+wandb_project: isaaclab
+resume: false
+load_run: .*
+load_checkpoint: model_.*.pt
+class_name: AMPRunner
+actor: {}
+critic: {}
+algorithm:
+  class_name: PPOAMP
+  num_learning_epochs: 5
+  num_mini_batches: 4
+  learning_rate: 0.0001
+  schedule: adaptive
+  gamma: 0.99
+  lam: 0.95
+  entropy_coef: 0.01
+  desired_kl: 0.01
+  max_grad_norm: 1.0
+  optimizer: adam
+  value_loss_coef: 1.0
+  use_clipped_value_loss: true
+  clip_param: 0.2
+  normalize_advantage_per_mini_batch: false
+  share_cnn_encoders: false
+  rnd_cfg: null
+  symmetry_cfg:
+    use_data_augmentation: true
+    use_mirror_loss: true
+    data_augmentation_func: luwu.tasks.tracking.amp.mdp.symmetry.g1:compute_symmetric_states
+    mirror_loss_coeff: 0.1
+  amp_cfg:
+    disc_obs_buffer_size: 100
+    grad_penalty_scale: 10.0
+    disc_trunk_weight_decay: 0.0001
+    disc_linear_weight_decay: 0.01
+    disc_learning_rate: 0.0001
+    disc_max_grad_norm: 1.0
+    amp_discriminator:
+      hidden_dims:
+      - 1024
+      - 512
+      activation: elu
+      style_reward_scale: 5.0
+      task_style_lerp: 0.3
+    loss_type: LSGAN
+policy:
+  class_name: ActorCritic
+  init_noise_std: 1.0
+  noise_std_type: scalar
+  state_dependent_std: false
+  actor_obs_normalization: false
+  critic_obs_normalization: false
+  actor_hidden_dims:
+  - 512
+  - 256
+  - 128
+  critic_hidden_dims:
+  - 512
+  - 256
+  - 128
+  activation: elu
+```
