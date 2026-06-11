@@ -41,7 +41,7 @@ import yaml
 from isaaclab.assets import Articulation
 from isaaclab.markers import VisualizationMarkers, VisualizationMarkersCfg
 
-from luwu import LEGGED_LAB_ROOT_DIR
+from luwu import LUWU_ROOT_DIR
 
 if args_cli.robot == "g1":
     from isaaclab_assets import G1_MINIMAL_CFG as ROBOT_CFG  # isort: skip
@@ -96,7 +96,7 @@ class RetargetedMotionLoader:
         self.robot_name = robot_name
 
         """Initialize the motion loader."""
-        motion_dir = os.path.join(LEGGED_LAB_ROOT_DIR, "data", robot_name)
+        motion_dir = os.path.join(LUWU_ROOT_DIR, "data", robot_name)
         self.motion_file = os.path.join(motion_dir, motion_file)
         if not os.path.exists(self.motion_file):
             raise FileNotFoundError(
@@ -309,7 +309,5 @@ def main():
 if __name__ == "__main__":
     # run the main function
     main()
-    # close sim app
-    simulation_app.close()
     # close sim app
     simulation_app.close()

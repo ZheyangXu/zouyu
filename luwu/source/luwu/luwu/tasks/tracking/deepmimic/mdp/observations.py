@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import MISSING
-from typing import TYPE_CHECKING
 
 import isaaclab.utils.math as math_utils
 import torch
 from isaaclab.assets import Articulation
+from isaaclab.envs import ManagerBasedEnv
 from isaaclab.managers import SceneEntityCfg
+from luwu.envs import ManagerBasedAnimationEnv
 
-if TYPE_CHECKING:
-    from isaaclab.envs import ManagerBasedEnv
-    from leggedluwu_lab.envs import ManagerBasedAnimationEnv
-
-    from luwu.managers import AnimationTerm
+from luwu.managers import AnimationTerm
 
 
 def root_rot_tan_norm(

@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-import torch
-
 import isaaclab.utils.math as math_utils
+import torch
 from isaaclab.assets import RigidObject
-from isaaclab.envs import mdp
+from isaaclab.envs import ManagerBasedRLEnv, mdp
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.sensors import ContactSensor
-
-if TYPE_CHECKING:
-    from isaaclab.envs import ManagerBasedRLEnv
 
 
 def feet_orientation_l2(

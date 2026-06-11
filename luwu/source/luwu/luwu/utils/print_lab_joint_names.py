@@ -41,21 +41,6 @@ else:
 
 
 if __name__ == "__main__":
-    # # Ground-plane
-    # cfg = sim_utils.GroundPlaneCfg()
-    # cfg.func("/World/defaultGroundPlane", cfg)
-
-    # # Lights
-    # cfg = sim_utils.LightCfg()
-    # cfg.func("/World/defaultLight", cfg)
-
-    # origin = np.array([0.0, 0.0, 0.0])
-    # prim_utils.create_prim(
-    #     prim_path="/World/Origin",
-    #     prim_type="Xform",
-    #     position=origin,
-    # )
-
     # Initialize the simulation context
     sim = sim_utils.SimulationContext(sim_utils.SimulationCfg(dt=0.01))
     sim.set_camera_view(eye=[2.5, 2.5, 2.5], target=[0.0, 0.0, 0.0])

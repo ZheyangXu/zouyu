@@ -1,18 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
 
 import isaaclab.utils.math as math_utils
 from isaaclab.assets import Articulation
+from isaaclab.envs import ManagerBasedEnv
 from isaaclab.managers import SceneEntityCfg
 
-if TYPE_CHECKING:
-    from isaaclab.envs import ManagerBasedEnv
-
-    from luwu.envs import ManagerBasedAnimationEnv
-    from luwu.managers import AnimationTerm
+from luwu.envs import ManagerBasedAnimationEnv
+from luwu.managers import AnimationTerm
 
 
 def root_local_rot_tan_norm(

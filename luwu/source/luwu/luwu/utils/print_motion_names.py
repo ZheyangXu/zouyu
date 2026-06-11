@@ -19,9 +19,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-LEGGED_LAB_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LUWU_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 motion_file = os.path.join(
-    LEGGED_LAB_ROOT_DIR, "data", "MotionData", args.robot, args.motion_file
+    LUWU_ROOT_DIR, "data", "MotionData", args.robot, args.motion_file
 )
 
 assert os.path.exists(

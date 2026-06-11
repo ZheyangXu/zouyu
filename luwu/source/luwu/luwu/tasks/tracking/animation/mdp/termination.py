@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import torch
 
-if TYPE_CHECKING:
-    from luwu.envs import ManagerBasedAnimationEnv
-    from luwu.managers import AnimationTerm
+from luwu.envs import ManagerBasedAnimationEnv
+from luwu.managers import AnimationTerm
 
 
 def motion_data_finish(env: ManagerBasedAnimationEnv) -> torch.Tensor:

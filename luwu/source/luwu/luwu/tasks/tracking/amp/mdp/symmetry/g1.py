@@ -10,7 +10,6 @@ from tensordict import TensorDict
 if TYPE_CHECKING:
     from omni.isaac.lab.envs import ManagerBasedRLEnv
 
-# specify the functions that are available for import
 __all__ = ["compute_symmetric_states"]
 
 
@@ -66,11 +65,6 @@ def compute_symmetric_states(
         actions_aug = None
 
     return obs_aug, actions_aug
-
-
-"""
-Symmetry functions for observations.
-"""
 
 
 def _transform_policy_obs_left_right(
@@ -179,37 +173,6 @@ def _transform_actions_left_right(actions: torch.Tensor) -> torch.Tensor:
     actions[:] = _switch_g1_29dof_joints_left_right(actions[:])
     return actions
 
-
-# Lab joint names:
-#  0 - left_hip_pitch_joint
-#  1 - right_hip_pitch_joint
-#  2 - waist_yaw_joint
-#  3 - left_hip_roll_joint
-#  4 - right_hip_roll_joint
-#  5 - waist_roll_joint
-#  6 - left_hip_yaw_joint
-#  7 - right_hip_yaw_joint
-#  8 - waist_pitch_joint
-#  9 - left_knee_joint
-# 10 - right_knee_joint
-# 11 - left_shoulder_pitch_joint
-# 12 - right_shoulder_pitch_joint
-# 13 - left_ankle_pitch_joint
-# 14 - right_ankle_pitch_joint
-# 15 - left_shoulder_roll_joint
-# 16 - right_shoulder_roll_joint
-# 17 - left_ankle_roll_joint
-# 18 - right_ankle_roll_joint
-# 19 - left_shoulder_yaw_joint
-# 20 - right_shoulder_yaw_joint
-# 21 - left_elbow_joint
-# 22 - right_elbow_joint
-# 23 - left_wrist_roll_joint
-# 24 - right_wrist_roll_joint
-# 25 - left_wrist_pitch_joint
-# 26 - right_wrist_pitch_joint
-# 27 - left_wrist_yaw_joint
-# 28 - right_wrist_yaw_joint
 
 def _switch_g1_29dof_joints_left_right(joint_data: torch.Tensor) -> torch.Tensor:
     """Applies a left-right symmetry transformation to the joint data tensor."""

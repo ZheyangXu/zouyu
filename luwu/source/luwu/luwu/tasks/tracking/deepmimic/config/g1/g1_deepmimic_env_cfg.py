@@ -4,7 +4,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 
-from luwu import LEGGED_LAB_ROOT_DIR
+from luwu import LUWU_ROOT_DIR
 from luwu.assets.unitree import UNITREE_G1_29DOF_CFG
 from luwu.tasks.tracking.deepmimic.deepmimic_env_cfg import DeepMimicEnvCfg
 
@@ -32,7 +32,7 @@ class G1DeepMimicEnvCfg(DeepMimicEnvCfg):
         )
 
         self.motion_data.motion_dataset.motion_data_dir = os.path.join(
-            LEGGED_LAB_ROOT_DIR, "data", "MotionData", "g1_29dof", "deepmimic"
+            LUWU_ROOT_DIR, "data", "MotionData", "g1_29dof", "deepmimic"
         )
         self.motion_data.motion_dataset.motion_data_weights = {
             "G5_-__back_kick_stageii": 1.0,
@@ -101,7 +101,6 @@ class G1DeepMimicEnvCfg(DeepMimicEnvCfg):
             "std": 10.0,
             "animation": ANIMATION_TERM_NAME,
         }
-
 
         self.terminations.base_contact.params["sensor_cfg"].body_names = [
             "waist_yaw_link",

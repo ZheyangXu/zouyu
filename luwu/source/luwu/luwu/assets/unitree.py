@@ -1,4 +1,4 @@
-from luwu import LEGGED_LAB_ROOT_DIR
+from luwu import LUWU_ROOT_DIR
 from luwu.assets import unitree_actuators
 
 import isaaclab.sim as sim_utils
@@ -35,7 +35,7 @@ class UnitreeUsdFileCfg(sim_utils.UsdFileCfg):
 
 UNITREE_GO2_CFG = UnitreeArticulationCfg(
     spawn=UnitreeUsdFileCfg(
-        usd_path=f"{LEGGED_LAB_ROOT_DIR}/assets/go2/usd/go2.usd",
+        usd_path=f"{LUWU_ROOT_DIR}/assets/go2/usd/go2.usd",
     ),
     init_state=ArticulationCfg.InitialStateCfg(
         pos=(0.0, 0.0, 0.4),
@@ -75,7 +75,7 @@ UNITREE_GO2_CFG = UnitreeArticulationCfg(
 
 UNITREE_G1_29DOF_CFG = UnitreeArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{LEGGED_LAB_ROOT_DIR}/assets/g1_29dof/usd/g1_29dof_rev_1_0/g1_29dof_rev_1_0.usd",
+        usd_path=f"{LUWU_ROOT_DIR}/assets/g1_29dof/usd/g1_29dof_rev_1_0/g1_29dof_rev_1_0.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

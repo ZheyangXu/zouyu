@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import torch
 from dataclasses import MISSING
 from typing import TYPE_CHECKING
 
 import isaaclab.utils.math as math_utils
+import torch
 from isaaclab.assets import Articulation
 from isaaclab.managers import SceneEntityCfg
 
-if TYPE_CHECKING:
-    from legged_lab.envs import ManagerBasedAnimationEnv
-    from legged_lab.managers import AnimationTerm
+from luwu.envs import ManagerBasedAnimationEnv
+from luwu.managers import AnimationTerm
 
 
 def ref_track_quat_error_exp(
@@ -74,7 +73,9 @@ def ref_track_root_ang_vel_w_error_exp(
     root_ang_vel = robot.data.root_ang_vel_w  # (N, 3)
     ref_root_ang_vel = animation_term.get_root_ang_vel_w()[:, 0, :]  # (N, 3)
 
-    ang_vel_err = torch.sum(torch.square(root_ang_vel - ref_root_ang_vel), dim=-1)  # (N,)
+    ang_vel_err = torch.sum(
+        torch.square(root_ang_vel - ref_root_ang_vel), dim=-1
+    )  # (N,)
     return torch.exp(-ang_vel_err / std**2)  # (N,)
 
 
@@ -87,19 +88,26 @@ def ref_track_key_body_pos_b_error_exp(
     robot: Articulation = env.scene[asset_cfg.name]
     animation_term: AnimationTerm = env.animation_manager.get_term(animation)
 
-    key_body_pos_w = robot.data.body_pos_w[:, asset_cfg.body_ids, :]  # shape: (num_envs, M, 3)
+    key_body_pos_w = robot.data.body_pos_w[
+        :, asset_cfg.body_ids, :
+    ]  # shape: (num_envs, M, 3)
     root_pos_w = robot.data.root_pos_w  # shape: (num_envs, 3).
     root_quat = robot.data.root_quat_w  # shape: (num_envs, 4), w, x, y, z order.
 
     num_key_bodies = key_body_pos_w.shape[1]
     key_body_pos_b = math_utils.quat_apply_inverse(
         root_quat.unsqueeze(1).expand(-1, num_key_bodies, -1).contiguous(),
-        key_body_pos_w - root_pos_w.unsqueeze(1).expand(-1, num_key_bodies, -1).contiguous(),
+        key_body_pos_w
+        - root_pos_w.unsqueeze(1).expand(-1, num_key_bodies, -1).contiguous(),
     )
 
-    ref_key_body_pos_b = animation_term.get_key_body_pos_b()[:, 0, :, :]  # shape: (num_envs, M, 3)
+    ref_key_body_pos_b = animation_term.get_key_body_pos_b()[
+        :, 0, :, :
+    ]  # shape: (num_envs, M, 3)
 
-    key_body_pos_b_err = torch.sum(torch.square(key_body_pos_b - ref_key_body_pos_b), dim=-1)  # shape: (num_envs, M)
+    key_body_pos_b_err = torch.sum(
+        torch.square(key_body_pos_b - ref_key_body_pos_b), dim=-1
+    )  # shape: (num_envs, M)
     key_body_pos_b_err_sum = torch.sum(key_body_pos_b_err, dim=-1)  # shape: (num_envs,)
     return torch.exp(-key_body_pos_b_err_sum / std**2)  # (N,)
 

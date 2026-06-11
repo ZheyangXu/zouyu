@@ -6,7 +6,7 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 
 import luwu.tasks.tracking.amp.mdp as mdp
-from luwu import LEGGED_LAB_ROOT_DIR
+from luwu import LUWU_ROOT_DIR
 from luwu.assets.unitree import UNITREE_G1_29DOF_CFG
 from luwu.tasks.tracking.amp.amp_env_cfg import LocomotionAmpEnvCfg
 
@@ -122,7 +122,7 @@ class G1AmpEnvCfg(LocomotionAmpEnvCfg):
         )
 
         self.motion_data.motion_dataset.motion_data_dir = os.path.join(
-            LEGGED_LAB_ROOT_DIR, "data", "motion", "g1_29dof", "amp", "walk_and_run"
+            LUWU_ROOT_DIR, "data", "motion", "g1_29dof", "amp", "walk_and_run"
         )
         self.motion_data.motion_dataset.motion_data_weights = {
             "B10_-__Walk_turn_left_45_stageii": 1.0,

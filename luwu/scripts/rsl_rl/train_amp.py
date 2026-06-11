@@ -122,16 +122,18 @@ if version.parse(installed_version) < version.parse(RSL_RL_VERSION):
 
 """Rest everything follows."""
 
-import gymnasium as gym
 import logging
 import os
 import time
-import torch
 from datetime import datetime
 
-from rsl_rl.runners import DistillationRunner, OnPolicyRunner
+import gymnasium as gym
 
-import isaaclab_tasks  # noqa: F401
+# Import extensions to set up environment tasks
+import luwu.tasks  # noqa: F401
+import torch
+from rsl_rl.runners import AMPRunner, DistillationRunner, OnPolicyRunner
+
 from isaaclab.envs import (
     DirectMARLEnv,
     DirectMARLEnvCfg,
@@ -141,12 +143,12 @@ from isaaclab.envs import (
 )
 from isaaclab.utils.dict import print_dict
 from isaaclab.utils.io import dump_yaml
+
 from isaaclab_rl.rsl_rl import RslRlBaseRunnerCfg, RslRlVecEnvWrapper
+
+import isaaclab_tasks  # noqa: F401
 from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
-
-# Import extensions to set up environment tasks
-import luwu.tasks  # noqa: F401
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -209,7 +211,6 @@ def main(
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
     # specify directory for logging runs: {time-stamp}_{run_name}
     log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    # The Ray Tune workflow extracts experiment name using the logging line below, hence, do not change it (see PR #2346, comment-2819298849)
     print(f"Exact experiment name requested from command line: {log_dir}")
     if agent_cfg.run_name:
         log_dir += f"_{agent_cfg.run_name}"
@@ -265,22 +266,10 @@ def main(
         )
     elif agent_cfg.class_name == "AMPRunner":
         processed_cfg = agent_cfg.to_dict()
-        from rsl_rl.runners import AMPRunner
-        print("==" * 200)
-        for k, v in agent_cfg.to_dict().items():
-            print(f"Agent Config {k}: {v}")
-            if k == "algorithm":
-                for kk, vv in agent_cfg.algorithm.to_dict().items():
-                    print(f"Agent Algorithm Config {kk}: {vv}")
-                op_name = processed_cfg["algorithm"]["optimizer"]
-                processed_cfg["algorithm"].pop("optimizer")
-                processed_cfg["algorithm"].pop("share_cnn_encoders")
-                print(f"Pop key optimizer: {op_name}")
+        processed_cfg["algorithm"].pop("optimizer")
+        processed_cfg["algorithm"].pop("share_cnn_encoders")
 
-        print("==" * 200)
-        runner = AMPRunner(
-            env, processed_cfg, log_dir=log_dir, device=agent_cfg.device
-        )
+        runner = AMPRunner(env, processed_cfg, log_dir=log_dir, device=agent_cfg.device)
     elif agent_cfg.class_name == "DistillationRunner":
         runner = DistillationRunner(
             env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device
