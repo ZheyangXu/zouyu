@@ -1,5 +1,5 @@
-import inspect
 import os
+import pathlib
 
 import torch
 import wandb
@@ -11,106 +11,53 @@ from mjlab.rl.exporter_utils import (
 from rsl_rl.runners.amp_on_policy_runner import AmpOnPolicyRunner
 
 
-class _OnnxPolicyWrapper(torch.nn.Module):
-    """Thin wrapper that exposes ``act_inference`` as ``forward`` for ONNX export.
-
-    Includes the obs normalizer so the exported ONNX model expects raw observations
-    and C++ deployment does not need to implement normalization separately.
-    """
-
-    def __init__(self, actor_critic, obs_normalizer=None):
-        super().__init__()
-        self.actor_critic = actor_critic
-        self.obs_normalizer = obs_normalizer
-
-    def forward(self, obs):
-        if self.obs_normalizer is not None:
-            obs = self.obs_normalizer(obs)
-        return self.actor_critic.act_inference(obs)
-
-
-def _onnx_export_kwargs_single_file() -> dict:
-    """Build kwargs that request single-file ONNX export across torch versions."""
-    try:
-        params = inspect.signature(torch.onnx.export).parameters
-    except (TypeError, ValueError):
-        return {}
-
-    if "external_data" in params:
-        return {"external_data": False}
-    if "use_external_data_format" in params:
-        return {"use_external_data_format": False}
-    return {}
-
-
-def _inline_external_onnx_data(onnx_path: str) -> None:
-    """Merge external tensor data back into a single ONNX file if needed."""
-    data_path = f"{onnx_path}.data"
-    if not os.path.exists(data_path):
-        return
-
-    try:
-        import onnx
-
-        model = onnx.load(onnx_path, load_external_data=True)
-        onnx.save_model(model, onnx_path, save_as_external_data=False)
-        if os.path.exists(data_path):
-            os.remove(data_path)
-        print(f"[INFO]: Inlined external ONNX data into single file: {onnx_path}")
-    except Exception as exc:
-        print(f"[WARN]: Failed to inline ONNX external data for {onnx_path}: {exc}")
-
-
 class AMPOnPolicyRunner(AmpOnPolicyRunner):
+    """Zouyu AMP on-policy runner with ONNX export and metadata support."""
+
     env: RslRlVecEnvWrapper
 
-    def _export_policy_to_onnx(self, path: str, filename: str = "policy.onnx"):
-        """Export the actor network to ONNX using the local ActorCritic model.
+    def export_policy_to_onnx(
+        self, path: str, filename: str = "policy.onnx", verbose: bool = False
+    ) -> None:
+        """Export the actor network to ONNX using the v5.3 MLPModel API.
 
-        The exported model includes the obs normalizer (if empirical_normalization
-        is enabled) so that the ONNX model expects raw observations directly.
+        The exported model includes the obs normalizer so that the ONNX
+        model expects raw observations directly.
         """
-        policy = self.alg.policy
-        # Include normalizer in the ONNX model if empirical normalization is used
-        obs_normalizer = None
-        if self.empirical_normalization:
-            obs_normalizer = self.obs_normalizer
-            obs_normalizer.to("cpu")
-            obs_normalizer.eval()
-        wrapper = _OnnxPolicyWrapper(policy, obs_normalizer)
-        wrapper.to("cpu")
-        wrapper.eval()
-        num_obs = policy.actor[0].in_features
-        dummy_input = torch.zeros(1, num_obs)
+        onnx_model = self.alg.get_policy().as_onnx(verbose=verbose)
+        onnx_model.to("cpu")
+        onnx_model.eval()
+
         os.makedirs(path, exist_ok=True)
+        save_path = os.path.join(path, filename)
+
         torch.onnx.export(
-            wrapper,
-            dummy_input,
-            os.path.join(path, filename),
+            onnx_model,
+            onnx_model.get_dummy_inputs(),
+            save_path,
             export_params=True,
             opset_version=18,
-            input_names=["obs"],
-            output_names=["actions"],
-            dynamic_axes={"obs": {0: "batch"}, "actions": {0: "batch"}},
-            **_onnx_export_kwargs_single_file(),
+            input_names=onnx_model.input_names,
+            output_names=onnx_model.output_names,
         )
-        _inline_external_onnx_data(os.path.join(path, filename))
-        # move policy back to training device
-        policy.to(self.device)
-        if obs_normalizer is not None:
-            obs_normalizer.to(self.device)
+        # Move policy back to training device
+        self.alg.get_policy().to(self.device)
 
-    def save(self, path: str, infos=None):
+    def save(self, path: str, infos: dict | None = None) -> None:
+        """Save model checkpoint and export ONNX policy with metadata."""
         super().save(path, infos)
-        policy_path = path.split("model")[0]
+        policy_path = os.path.dirname(path)
         filename = "policy.onnx"
-        self._export_policy_to_onnx(policy_path, filename)
-        run_name: str = (
-            wandb.run.name if self.logger_type == "wandb" and wandb.run else "local"
-        )  # type: ignore[assignment]
+        self.export_policy_to_onnx(policy_path, filename)
+
+        run_name = (
+            wandb.run.name
+            if self.logger.writer is not None and self.logger.logger_type == "wandb" and wandb.run
+            else "local"
+        )
         onnx_path = os.path.join(policy_path, filename)
         metadata = get_base_metadata(self.env.unwrapped, run_name)
         attach_metadata_to_onnx(onnx_path, metadata)
-        _inline_external_onnx_data(onnx_path)
-        if self.logger_type in ["wandb"]:
+
+        if self.logger.writer is not None and self.logger.logger_type in ["wandb"]:
             wandb.save(policy_path + filename, base_path=os.path.dirname(policy_path))
