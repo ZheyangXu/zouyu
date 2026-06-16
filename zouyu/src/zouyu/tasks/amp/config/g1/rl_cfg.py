@@ -59,7 +59,7 @@ def g1_amp_ppo_runner_cfg() -> RslRlAmpRunnerCfg:
             lam=0.95,
             desired_kl=0.01,
             max_grad_norm=1.0,
-            class_name="AMPPPO",
+            class_name="AmpPPO",
         ),
         experiment_name="g1_amp_locomotion",
         logger="tensorboard",
