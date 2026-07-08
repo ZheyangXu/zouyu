@@ -190,13 +190,16 @@ def main(
 
     print(f"[INFO]: Loading model checkpoint from: {resume_path}")
     # load previously trained model
+    processed_cfg = agent_cfg.to_dict()
+    # processed_cfg["algorithm"].pop("optimizer")
+    processed_cfg["algorithm"].pop("share_cnn_encoders")
     if agent_cfg.class_name == "OnPolicyRunner":
         runner = OnPolicyRunner(
-            env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device
+            env, processed_cfg, log_dir=None, device=agent_cfg.device
         )
     elif agent_cfg.class_name == "DistillationRunner":
         runner = DistillationRunner(
-            env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device
+            env, processed_cfg, log_dir=None, device=agent_cfg.device
         )
     else:
         raise ValueError(f"Unsupported runner class: {agent_cfg.class_name}")
