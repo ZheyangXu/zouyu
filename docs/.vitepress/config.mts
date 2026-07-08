@@ -28,6 +28,10 @@ export default defineConfig({
             link: "/projects/mpc/",
           },
           {
+            text: "AME",
+            link: "/projects/ame/",
+          },
+          {
             text: "人形机器人",
             link: "/projects/humanoid/",
           },

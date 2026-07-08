@@ -58,25 +58,25 @@ $$L_{student} = L_{PPO} + \lambda_{action} L_{action} + \lambda_{repr} L_{repr}$
 
 ### Rewards
 
-| 奖励                       | 公式                                                         | 权重                 | 函数名称 |
-| -------------------------- | ------------------------------------------------------------ | -------------------- | -------- |
-| Linear velocity tracking   | $exp({-\lVert v^{*}_{xy, j} - v_{xy, j}\rVert})$             | 5.0                  | -        |
-| Angular velocity tracking  | $exp({-\lVert \omega^{*}_{z, j} - \omega_{z, j}\rVert})$     | 3.0                  | -        |
-| Termination peanlty        | $-n_{termination}$                                           | 200                  | -        |
-| Collision peanlty          | $-n_{collision, j}$                                          | 1                    | -        |
-| Action rate                | $-\lVert a_{jt} = a_{jt-1}\rVert^2$                          | $5.0 \times 10^{-3}$ | -        |
-| Joint acceleration penalty | $-\lVert \ddot{q}_{j}\rVert^{2}$                             | $2.5 \times 10^{-7}$ | -        |
-| Joint torque penalty       | $-\lVert \tau_{j} \rVert^{2}$                                | $2.0 \times 10^{-5}$ | -        |
-| Joint position limits      | $-\max(\lvert q_j \rvert - 0.9q_{lim, j}, \; 0)$             | 1.0                  | -        |
-| Joint velocity limits      | $-\max(\lvert \dot{q}_j \rvert - 0.9\dot{q}_{lim, j}, \; 0)$ | 1.0                  | -        |
-| Joint torque limits        | $-\max(\lvert \tau_j \rvert - 0.9\tau_{lim, j}, \; 0)$       | 0.2                  | -        |
-| Linear velocity penalty    | $-v_{z, i^{*}}^{2}$                                          | 1.0                  | -        |
-| Angular velocity penalty   | $-\lVert \omega_{xy, i}\rVert^{2}$                           | $5.0 \times 10^{-2}$ | -        |
-| Contact force penalty      | $-max(\lVert F_f\rVert - 700, 0)$                            | $2.5 \times 10^{-5}$ | -        |
-| Foot slippage penalty      | $-c_{f}^{*}\lVert v_f\rVert$                                 | 0.5                  | -        |
-| Joint deviation penalty    | $max(\lVert q_j - q_{0, j}\rVert^{2}-0.25, 0.0)$             | -                    | -        |
-| No fly                     | $-n_{zero\_contact}$                                         | -                    | -        |
-| Straight body              | $-\lVert g_i\rVert^2$                                        | -                    | -        |
+| 奖励                       | 公式                                                         | 权重                 |
+| -------------------------- | ------------------------------------------------------------ | -------------------- |
+| Linear velocity tracking   | $exp({-\lVert v^{*}_{xy, j} - v_{xy, j}\rVert})$             | 5.0                  |
+| Angular velocity tracking  | $exp({-\lVert \omega^{*}_{z, j} - \omega_{z, j}\rVert})$     | 3.0                  |
+| Termination peanlty        | $-n_{termination}$                                           | 200                  |
+| Collision peanlty          | $-n_{collision, j}$                                          | 1                    |
+| Action rate                | $-\lVert a_{jt} = a_{jt-1}\rVert^2$                          | $5.0 \times 10^{-3}$ |
+| Joint acceleration penalty | $-\lVert \ddot{q}_{j}\rVert^{2}$                             | $2.5 \times 10^{-7}$ |
+| Joint torque penalty       | $-\lVert \tau_{j} \rVert^{2}$                                | $2.0 \times 10^{-5}$ |
+| Joint position limits      | $-\max(\lvert q_j \rvert - 0.9q_{lim, j}, \; 0)$             | 1.0                  |
+| Joint velocity limits      | $-\max(\lvert \dot{q}_j \rvert - 0.9\dot{q}_{lim, j}, \; 0)$ | 1.0                  |
+| Joint torque limits        | $-\max(\lvert \tau_j \rvert - 0.9\tau_{lim, j}, \; 0)$       | 0.2                  |
+| Linear velocity penalty    | $-v_{z, i^{*}}^{2}$                                          | 1.0                  |
+| Angular velocity penalty   | $-\lVert \omega_{xy, i}\rVert^{2}$                           | $5.0 \times 10^{-2}$ |
+| Contact force penalty      | $-max(\lVert F_f\rVert - 700, 0)$                            | $2.5 \times 10^{-5}$ |
+| Foot slippage penalty      | $-c_{f}^{*}\lVert v_f\rVert$                                 | 0.5                  |
+| Joint deviation penalty    | $max(\lVert q_j - q_{0, j}\rVert^{2}-0.25, 0.0)$             | 0.5                  |
+| No fly                     | $-n_{zero\_contact}$                                         | 5.0                  |
+| Straight body              | $-\lVert g_i\rVert^2$                                        | 3.0                  |
 
 ### Observations
 
